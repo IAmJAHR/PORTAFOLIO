@@ -1,25 +1,43 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tetris - Hecho por Juan Abel</title>
     <link rel="stylesheet" href="css/game.css">
 </head>
+
 <body>
-    <div class="game-container">
-        <div class="grid"></div>
-        <div class="info-container">
-            <h1>Tetris</h1>
-            <p>Puntuación: <span id="score">0</span></p>
-            <p>Tiempo: <span id="timer">00:00</span></p>
-            <button id="start-button">Iniciar Juego</button>
-            <button id="reset-button">Reiniciar Juego</button>
+    <div id="game-container">
+       
+        <div id="tetris-game" >
+            <canvas id="tetris-canvas"></canvas>
+            <div id="sidebar">
+                <!-- <div id="next-piece">
+                    <div id="next-label">NEXT</div>
+                    <div id="next-display"></div>
+                </div> -->
+                <div id="hold-piece">HOLD</div>
+                <div>Score: <span id="score">0</span></div>
+                <div id="level">LEVEL: 1</div>
+                <div id="time">TIME: 00:00</div>
+                <div id="controls">
+                    <button id="pause-button">Pausa</button>
+                </div>
+                <button id="restart-button">Reiniciar</button>
+                <button id="start-button">Iniciar</button>
+
+              
+            </div>
         </div>
     </div>
-    <footer>
-        <p>Hecho con 💻 por <strong>Juan Abel (Jabel Dev)</strong></p>
-    </footer>
-    <script src="dist/js/source_game.js"></script>
+
 </body>
+<footer id="footer">
+    <p>Hecho con <span class="heart">❤️</span> por <strong>Juan Abel (Jabel Dev)</strong></p>
+</footer>
+<script src="dist/js/source_game.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
 </html>
