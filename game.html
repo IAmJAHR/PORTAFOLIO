@@ -6,38 +6,79 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tetris - Hecho por Juan Abel</title>
     <link rel="stylesheet" href="css/game.css">
+
+
+    <!-- Scripts de Firebase (versión 8.x, ejemplo 8.10.1) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 </head>
 
-<body>
-    <div id="game-container">
-       
-        <div id="tetris-game" >
-            <canvas id="tetris-canvas"></canvas>
-            <div id="sidebar">
-                <div id="next-piece" style='display:none'>
-                    <div id="next-label">NEXT</div>
-                    <div id="next-display"></div>
-                </div>
-                <div id="hold-piece">HOLD</div>
-                <div>Score: <span id="score">0</span></div>
-                <div id="level">LEVEL: 1</div>
-                <div id="time">TIME: 00:00</div>
-                <div id="controls">
-                    <button id="pause-button">Pausa</button>
-                </div>
-                <button id="restart-button">Reiniciar</button>
-                <button id="start-button">Iniciar</button>
+<body onload=" mostrarPuntajes()">
+    <!-- 📦 CONTENEDOR PRINCIPAL -->
+    <div id="main-layout">
 
-              
+        <!-- 🕹️ Panel de Controles -->
+        <div id="controls-column">
+            <div id="next-piece">
+                <div id="next-label">NEXT</div>
+                <div id="next-display"></div>
             </div>
+            <div id="hold-piece">HOLD</div>
+            <div>Score: <span id="score">0</span></div>
+            <div id="level">LEVEL: 1</div>
+            <div id="time">TIME: 00:00</div>
+
+            <button id="start-button" onclick="iniciar_juego();">Iniciar</button>
+            <button id="pause-button" onclick="togglePause();" style="display: none;">Pausa</button>
+            <button id="restart-button" onclick="restartGame();" style="display: none;">Reiniciar</button>
+            <button id="guardar-score-button" style="display: none;" onclick="forzarGameOverArcade()">Guardar Puntaje
+                🌹</button>
+        </div>
+
+        <!-- 🎮 Canvas del Juego -->
+        <div id="game-column">
+            <canvas id="tetris-canvas"></canvas>
+        </div>
+             <!-- 🏆 Tabla de Puntajes -->
+        <div id="leaderboard-container">
+            <h3>Top de Puntajes</h3>
+            <table id="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Jugador</th>
+                        <th>Puntaje</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+
+        <!-- 💾 Modal Arcade GAME OVER -->
+        <div id="arcade-game-over" class="arcade-modal hidden">
+            <h1>🄹 GAME OVER</h1>
+            <p>Tu puntaje: <span id="arcade-score">0</span></p>
+            <input type="text" id="arcade-nombre" placeholder="Escribe tu nombre...">
+            <button onclick="guardarPuntajeArcade()">📂 Guardar Puntaje</button>
         </div>
     </div>
 
-</body>
-<footer id="footer">
-    <p>Hecho con <span class="heart">❤️</span> por <strong>Juan Abel (Jabel Dev)</strong></p>
-</footer>
-<script src="dist/js/source_game.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <!-- ✅ FOOTER -->
+    <footer id="footer">
+        <p>Hecho con <span class="heart">❤️</span> por <strong>Juan Abel (Jabel Dev)</strong></p>
+    </footer>
+
+
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+
+    <script src="dist/js/source_game.js"></script>
+    <script src="dist/js/firebase-init.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
 
 </html>
