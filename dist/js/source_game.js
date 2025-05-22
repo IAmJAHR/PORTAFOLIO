@@ -1,12 +1,12 @@
-document.addEventListener("contextmenu", function (e) {
-  e.preventDefault();
-});
-document.addEventListener("keydown", function (e) {
-  if (e.key === "F12" || (e.ctrlKey && e.shiftKey && e.key === "I")) {
-    e.preventDefault();
-    alert("🚫 Asi te queria agarrar Puerco.");
-  }
-});
+// document.addEventListener("contextmenu", function (e) {
+//   e.preventDefault();
+// });
+// document.addEventListener("keydown", function (e) {
+//   if (e.key === "F12" || (e.ctrlKey && e.shiftKey && e.key === "I")) {
+//     e.preventDefault();
+//     alert("🚫 Asi te queria agarrar Puerco.");
+//   }
+// });
 
 const canvas = document.getElementById('tetris-canvas');
 const context = canvas.getContext('2d');
