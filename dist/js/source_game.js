@@ -1,3 +1,13 @@
+// document.addEventListener("contextmenu", function (e) {
+//   e.preventDefault();
+// });
+// document.addEventListener("keydown", function (e) {
+//   if (e.key === "F12" || (e.ctrlKey && e.shiftKey && e.key === "I")) {
+//     e.preventDefault();
+//     alert("🚫 Asi te queria agarrar Puerco.");
+//   }
+// });
+
 const canvas = document.getElementById('tetris-canvas');
 const context = canvas.getContext('2d');
 
@@ -204,18 +214,19 @@ const player = {
 };
 
 function playerDrop() {
-    player.pos.y++; // Baja la pieza
-
+    player.pos.y++;
     if (collide(arena, player)) {
-        player.pos.y--; // Si colisiona, regresa la pieza
-        merge(arena, player); // Fusiona la pieza con el tablero
-        playerReset(); // Resetea la pieza y actualiza NEXT
-        clearLines(); // Limpia líneas completas
+        player.pos.y--;
+        merge(arena, player);
+
+        if (playerReset()) {
+            return; // Sale del flujo si el juego terminó
+        }
+
+        clearLines(); // Elimina líneas completas
     }
-
-    dropCounter = 0; // Reinicia el contador de caída
+    draw(); // Actualiza la pantalla
 }
-
 
 function clearLines() {
     let linesCleared = 0;
@@ -270,11 +281,11 @@ function playerReset() {
         nextPieces.push(randomPiece());
     }
 
-    console.log("Cola antes del shift:", nextPieces);
+    // console.log("Cola antes del shift:", nextPieces);
 
     // Toma la pieza de la cola y establece como actual
     player.matrix = nextPieces.shift();
-    console.log("Pieza actual después del shift:", player.matrix);
+    // console.log("Pieza actual después del shift:", player.matrix);
 
     // Posiciona la pieza actual al inicio
     player.pos.y = 0;
@@ -282,14 +293,14 @@ function playerReset() {
 
     // Agrega una nueva pieza a la cola
     nextPieces.push(randomPiece());
-    console.log("Cola después del push:", nextPieces);
+    // console.log("Cola después del push:", nextPieces);
 
     // Actualiza la visualización de la próxima pieza
     updateNextDisplay();
 
     // Si la nueva pieza colisiona al ser colocada, termina el juego
     if (collide(arena, player)) {
-        console.log("¡Colisión detectada al reiniciar el jugador! Juego terminado.");
+        // console.log("¡Colisión detectada al reiniciar el jugador! Juego terminado.");
         gameOver();
     }
 }
@@ -328,26 +339,80 @@ function draw() {
 }
 
 
-document.addEventListener('DOMContentLoaded', () => {
+// document.addEventListener('DOMContentLoaded', () => {
+//     const startButton = document.getElementById('start-button');
+//     const pauseButton = document.getElementById('pause-button');
+//     const restartButton = document.getElementById('restart-button');
+//     let gameStarted = false; // Controla si el juego ya inició
+
+//     // Inicialmente, desactiva los botones de pausa y reinicio
+//     pauseButton.disabled = true;
+//     restartButton.disabled = true;
+
+//     startButton.addEventListener('click', () => {
+//         if (!gameStarted) {
+//             gameStarted = true; // Marca que el juego ya inició
+//             startButton.style.display = 'none'; // Oculta el botón de iniciar
+//             pauseButton.disabled = false; // Habilita el botón de pausa
+//             restartButton.disabled = false; // Habilita el botón de reinicio
+//             startGame(); // Llama a la función para iniciar el juego
+//         }
+//     });
+// });
+let timerInterval;
+let levelInterval;
+let startTime;
+let elapsedTime = 0;
+function iniciar_juego() {
     const startButton = document.getElementById('start-button');
     const pauseButton = document.getElementById('pause-button');
     const restartButton = document.getElementById('restart-button');
-    let gameStarted = false; // Controla si el juego ya inició
-
-    // Inicialmente, desactiva los botones de pausa y reinicio
     pauseButton.disabled = true;
     restartButton.disabled = true;
+    gameStarted = true;
+    startButton.style.display = 'none';
+    pauseButton.disabled = false;
+    restartButton.disabled = false;
+    startTime = Date.now(); // ⏱️ Empieza el cronómetro
+    timerInterval = setInterval(updateTime, 1000); // ↻ Actualiza cada segundo
+    levelInterval = setInterval(increaseLevel, 10000);
+    $("#pause-button").show();
+    $("#restart-button").show();
+    $("#guardar-score-button").show();
+    startGame(); // <- aquí llama a tu lógica principal del juego
+}
+let isPaused = false; // Variable global para el estado de pausa
 
-    startButton.addEventListener('click', () => {
-        if (!gameStarted) {
-            gameStarted = true; // Marca que el juego ya inició
-            startButton.style.display = 'none'; // Oculta el botón de iniciar
-            pauseButton.disabled = false; // Habilita el botón de pausa
-            restartButton.disabled = false; // Habilita el botón de reinicio
-            startGame(); // Llama a la función para iniciar el juego
-        }
-    });
-});
+const pauseButton = document.getElementById('pause-button');
+
+
+function togglePause() {
+    isPaused = !isPaused;
+    $("#start-button").hide();
+
+    if (isPaused) {
+        // console.log("Juego en pausa");
+        pauseButton.textContent = "Reanudar";
+
+        // ⏸ Detener intervalos
+        clearInterval(timerInterval);
+        clearInterval(levelInterval);
+
+        // ⏱️ Guardar tiempo transcurrido para continuar después
+        elapsedTime += Date.now() - startTime;
+    } else {
+        // console.log("Juego reanudado");
+        pauseButton.textContent = "Pausa";
+        lastTime = performance.now();
+        startTime = Date.now() - elapsedTime;
+        timerInterval = setInterval(updateTime, 1000);
+        levelInterval = setInterval(increaseLevel, 10000);
+
+        lastTime = performance.now(); // Necesario para `update()`
+        update();
+    }
+}
+
 
 function startGame() {
     // nextPieces.length = 0; // Limpia la cola de próximas piezas
@@ -379,29 +444,47 @@ function increaseLevel() {
     document.getElementById('level').innerText = "LEVEL: " + level;
 }
 
-setInterval(increaseLevel, 10000); // Aumenta el nivel cada 10 segundos
+
 const piecesTypes = 'ILJOTSZ';  // Representa los tipos de piezas disponibles
 
 function randomPiece() {
-    const randomIndex = Math.floor(Math.random() * piecesTypes.length);  // Obtiene un índice aleatorio
-    const type = piecesTypes[randomIndex];  // Selecciona un tipo de pieza basado en el índice aleatorio
-    return createPiece(type);  // Crea y retorna una pieza del tipo seleccionado
+    const randomIndex = Math.floor(Math.random() * piecesTypes.length);
+    const type = piecesTypes[randomIndex];
+    const matrix = createPiece(type);
+    return { matrix, type }; // ✅ Devuelve objeto con .matrix
 }
 
-function playerReset() {
-    player.matrix = randomPiece(); // Genera una nueva pieza
-    player.pos.y = 0; // Restablece la posición al tope
-    player.pos.x = (width / 2 | 0) - (player.matrix[0].length / 2 | 0); // Centra horizontalmente
-    updateNextDisplay(); // Actualiza la vista de "NEXT"
 
-    // Detecta si hay colisión inmediatamente
+function playerReset() {
+    // ✅ Toma la primera pieza de la cola
+    const piece = nextPieces.shift();
+    player.matrix = piece.matrix;
+    player.type = piece.type;
+
+    // ✅ Mete una nueva pieza al final de la cola
+    nextPieces.push(randomPiece());
+
+    // ✅ Posiciona la nueva pieza arriba y centrada
+    player.pos.y = 0;
+    player.pos.x = (width / 2 | 0) - (player.matrix[0].length / 2 | 0);
+
+    // ✅ Actualiza el display
+    updateNextDisplay();
+
+    // 🛑 Verifica si ya hay colisión
     if (collide(arena, player)) {
-        alert("¡Juego terminado! Presiona reiniciar para jugar de nuevo.");
-        isPaused = true; // Pausa el juego automáticamente
-        clearInterval(timerInterval); // Detiene el cronómetro
-        return true; // Indica que el juego terminó
+        // alert("¡Juego terminado! Presiona reiniciar para jugar de nuevo.");
+        isPaused = true;
+        clearInterval(timerInterval);
+        clearInterval(levelInterval);
+
+        const score = parseInt(document.getElementById("score").innerText);
+        mostrarGameOverArcade(score);
+
+        return true;
     }
-    return false; // El juego continúa normalmente
+
+    return false;
 }
 
 // document.addEventListener('DOMContentLoaded', function () {
@@ -436,6 +519,7 @@ function initNextPieces() {
     nextPieces.push(randomPiece());
     nextPieces.push(randomPiece());
     updateNextDisplay();
+    // console.log("Siguiente pieza:", nextPieces[0]);
 }
 
 function updateNextDisplay() {
@@ -443,8 +527,8 @@ function updateNextDisplay() {
     nextPieceDisplay.innerHTML = ''; // Limpia el contenido anterior
 
     if (nextPieces.length > 0) {
-        const nextPiece = nextPieces[0]; // Toma la primera pieza de la cola
-        const blockSize = 20; // Tamaño del bloque para el display
+        const nextPiece = nextPieces[0].matrix; // ✅ Aquí accedemos a la matriz
+        const blockSize = 20;
 
         nextPiece.forEach((row, y) => {
             row.forEach((value, x) => {
@@ -456,7 +540,7 @@ function updateNextDisplay() {
                     block.style.left = `${x * blockSize}px`;
                     block.style.top = `${y * blockSize}px`;
                     block.style.backgroundColor = determineColor(value);
-                    block.style.border = '1px solid #000'; // Borde para destacar los bloques
+                    block.style.border = '1px solid #000';
                     nextPieceDisplay.appendChild(block);
                 }
             });
@@ -467,15 +551,13 @@ function updateNextDisplay() {
 }
 
 
-
-
 function determineColor(value) {
     const colors = ['#FF0D72', '#0DC2FF', '#0DFF72', '#F538FF', '#FF8E0D', '#FFE138', '#3877FF'];
     return colors[value - 1]; // Asumiendo que 'value' empieza en 1
 }
 
-let startTime = Date.now();
-let timerInterval = setInterval(updateTime, 1000);
+// let startTime = Date.now();
+// let timerInterval = setInterval(updateTime, 1000);
 
 function updateTime() {
     let elapsedTime = Date.now() - startTime;
@@ -484,27 +566,6 @@ function updateTime() {
     document.getElementById('time').innerText = `TIME: ${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
 }
 
-let isPaused = false; // Variable global para el estado de pausa
-
-const pauseButton = document.getElementById('pause-button');
-
-pauseButton.addEventListener('click', () => {
-    togglePause(); // Llama a togglePause al hacer clic en el botón
-});
-
-function togglePause() {
-    isPaused = !isPaused;
-
-    if (isPaused) {
-        console.log("Juego en pausa");
-        pauseButton.textContent = "Reanudar";
-    } else {
-        console.log("Juego reanudado");
-        pauseButton.textContent = "Pausa";
-        lastTime = performance.now();
-        update();
-    }
-}
 
 function update(time = 0) {
     if (isPaused) return; // Detiene la ejecución si está en pausa
@@ -521,6 +582,7 @@ function update(time = 0) {
     draw(); // Redibuja el estado actual del juego
     requestAnimationFrame(update); // Continúa el bucle de juego
 }
+
 function restartGame() {
     const scoreElement = document.getElementById('score');
     const levelElement = document.getElementById('level');
@@ -551,10 +613,84 @@ function restartGame() {
     timerInterval = setInterval(updateTime, 1000);
     playerReset();
     draw();
-    console.log("Juego reiniciado");
+    // console.log("Juego reiniciado");
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-    document.getElementById('restart-button').addEventListener('click', restartGame);
-});
 
+
+
+
+// function guardarPuntaje() {
+//     jugador = "bbcito";
+//     score = 1000;
+//     db.collection("puntajes").add({
+//         jugador: jugador,
+//         score: score
+//     })
+//         .then(() => {
+//             console.log("✅ Puntaje guardado");
+//             mostrarPuntajes();
+//         })
+//         .catch(error => {
+//             console.error("❌ Error al guardar puntaje:", error);
+//         });
+// }
+function guardarPuntajeArcade() {
+    const nombre = document.getElementById("arcade-nombre").value.trim();
+    const score = parseInt(document.getElementById("arcade-score").innerText);
+
+    if (!nombre) {
+        alert("😅 Escribe tu nombre primero.");
+        return;
+    }
+
+    db.collection("puntajes").add({
+        jugador: nombre,
+        score: score
+    })
+        .then(() => {
+            document.getElementById('arcade-game-over').classList.add('hidden');
+            alert("✅ Puntaje guardado con estilo arcade.");
+            mostrarPuntajes(); // opcional
+        })
+        .catch(error => {
+            console.error("❌ Error al guardar puntaje:", error);
+        });
+}
+
+function mostrarPuntajes() {
+    const tbody = document.querySelector("#leaderboard-table tbody");
+    tbody.innerHTML = ""; // Limpiar antes de cargar
+
+    db.collection("puntajes")
+        .orderBy("score", "desc")
+        .limit(10)
+        .get()
+        .then((snapshot) => {
+            let i = 1;
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const fila = document.createElement("tr");
+                fila.innerHTML = `
+          <td>${i++}</td>
+          <td>${data.jugador}</td>
+          <td>${data.score}</td>
+        `;
+                tbody.appendChild(fila);
+            });
+        })
+        .catch((error) => {
+            console.error("❌ Error al mostrar puntajes:", error);
+        });
+}
+function mostrarGameOverArcade(score) {
+    document.getElementById('arcade-score').innerText = score;
+    document.getElementById('arcade-game-over').classList.remove('hidden');
+   
+
+}
+function forzarGameOverArcade() {
+    const score = parseInt(document.getElementById("score").innerText);
+    mostrarGameOverArcade(score);
+    togglePause();
+}
