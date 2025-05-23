@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="image/icono.png">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+
     <link rel="stylesheet" href="css/index.css">
     <title>Bienvenido</title>
 </head>
@@ -28,18 +30,24 @@
     </header>
 
     <!-- Sección: Sobre mí -->
-    <section id="about" class="about-section">
+    <section id="about" class="about-section" data-aos="fade-up">
         <div class="about-content">
             <img src="image/imagen-logo.png" alt="Foto de perfil" class="profile-pic">
             <div class="about-text">
                 <h2><span class="gradient-title">Sobre mí</span></h2>
                 <p>
-                    ¡Hola! Soy <strong>Juan Abel</strong>, un desarrollador apasionado por crear experiencias <em>visuales</em> y <em>funcionales</em>.
-                    Me especializo en <strong>PHP</strong>, <strong>JavaScript</strong>, <strong>SQL</strong> y tengo amplia experiencia integrando soluciones empresariales con <strong>SAP Business One</strong>, utilizando <code>DI-API</code> en <strong>C#</strong> y bases de datos <strong>SAP HANA</strong>.
+                    ¡Hola! Soy <strong>Juan Abel</strong>, un desarrollador apasionado por crear experiencias
+                    <em>visuales</em> y <em>funcionales</em>.
+                    Me especializo en <strong>PHP</strong>, <strong>JavaScript</strong>, <strong>SQL</strong> y tengo
+                    amplia experiencia integrando soluciones empresariales con <strong>SAP Business One</strong>,
+                    utilizando <code>DI-API</code> en <strong>C#</strong> y bases de datos <strong>SAP HANA</strong>.
                 </p>
                 <p>
-                    He trabajado en empresas del sector industrial desarrollando sistemas de gestión para <strong>almacenes</strong>, <strong>ventas</strong> y <strong>procesos logísticos</strong>.
-                    Me considero una persona comprometida, que aprende rápido y que siempre está dispuesta a trabajar duro. Me adapto con facilidad y busco constantemente optimizar procesos mediante soluciones tecnológicas eficientes.
+                    He trabajado en empresas del sector industrial desarrollando sistemas de gestión para
+                    <strong>almacenes</strong>, <strong>ventas</strong> y <strong>procesos logísticos</strong>.
+                    Me considero una persona comprometida, que aprende rápido y que siempre está dispuesta a trabajar
+                    duro. Me adapto con facilidad y busco constantemente optimizar procesos mediante soluciones
+                    tecnológicas eficientes.
                 </p>
 
             </div>
@@ -47,9 +55,9 @@
     </section>
 
     <!-- Sección: Proyectos -->
-    <section id="projects" class="projects">
+    <section id="projects" class="projects" data-aos="fade-up">
         <h2 class="projects-title">🚀 Proyectos</h2>
-        <div class="projects-grid">
+        <div class="projects-grid" data-aos="zoom-in">
             <div class="project-card">
                 <img src="image/logo-tetris.png" alt="Proyecto Tetris">
                 <h3>🎮 Videojuego Tetris</h3>
@@ -68,14 +76,15 @@
             </div>
         </div>
     </section>
-    <section id="contact" class="contact-section">
+    <section id="contact" class="contact-section" data-aos="fade-up">
         <div class="contact-container">
             <h2 class="contact-title">📬 Contacto</h2>
             <p>Estoy disponible para colaborar en proyectos o resolver dudas. Puedes escribirme directamente:</p>
 
             <div class="contact-links">
                 <a href="mailto:jabelxd1@gmail.com" class="contact-button">📧 Enviar correo</a>
-                <a href="https://www.linkedin.com/in/juan-abel-huaman-rafael-1987572b8/" target="_blank" class="contact-button linkedin">
+                <a href="https://www.linkedin.com/in/juan-abel-huaman-rafael-1987572b8/" target="_blank"
+                    class="contact-button linkedin">
                     🔗 LinkedIn
                 </a>
             </div>
@@ -85,10 +94,14 @@
 
 
     <script src="dist/js/source_index.js"></script>
-<footer class="footer">
-    <p>&copy; 2025 Juan Abel Huaman Rafael. Todos los derechos reservados.</p>
-</footer>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <footer class="footer">
+        <p>&copy; 2025 Juan Abel Huaman Rafael. Todos los derechos reservados.</p>
+    </footer>
 </body>
 
 
 </html>
+<script>
+    AOS.init();
+</script>
