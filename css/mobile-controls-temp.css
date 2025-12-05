@@ -1,0 +1,84 @@
+/* ========== MOBILE CONTROLS ========== */
+.mobile-controls {
+    display: none;
+    /* Hidden by default, shown via JS on mobile */
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+    padding: 20px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.mobile-btn {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    color: white;
+    font-size: 32px;
+    padding: 25px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-btn:active {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(0.95);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.mobile-left {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.mobile-rotate {
+    grid-column: 2;
+    grid-row: 1;
+    background: rgba(0, 212, 255, 0.15);
+    border-color: rgba(0, 212, 255, 0.3);
+}
+
+.mobile-rotate:active {
+    background: rgba(0, 212, 255, 0.35);
+}
+
+.mobile-right {
+    grid-column: 3;
+    grid-row: 1;
+}
+
+.mobile-down {
+    grid-column: 2;
+    grid-row: 2;
+    background: rgba(255, 107, 107, 0.15);
+    border-color: rgba(255, 107, 107, 0.3);
+}
+
+.mobile-down:active {
+    background: rgba(255, 107, 107, 0.35);
+}
+
+@media (max-width: 768px) {
+    .mobile-controls {
+        display: grid !important;
+    }
+
+    #game-column {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}

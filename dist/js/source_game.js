@@ -1,11 +1,11 @@
 document.addEventListener("contextmenu", function (e) {
-  e.preventDefault();
+    e.preventDefault();
 });
 document.addEventListener("keydown", function (e) {
-  if (e.key === "F12" || (e.ctrlKey && e.shiftKey && e.key === "I")) {
-    e.preventDefault();
-    alert("🚫 Asi te queria agarrar Puerco.");
-  }
+    if (e.key === "F12" || (e.ctrlKey && e.shiftKey && e.key === "I")) {
+        e.preventDefault();
+        alert("🚫 Asi te queria agarrar Puerco.");
+    }
 });
 
 const canvas = document.getElementById('tetris-canvas');
@@ -635,58 +635,13 @@ function restartGame() {
 //             console.error("❌ Error al guardar puntaje:", error);
 //         });
 // }
-function guardarPuntajeArcade() {
-    const nombre = document.getElementById("arcade-nombre").value.trim();
-    const score = parseInt(document.getElementById("arcade-score").innerText);
+// guardarPuntajeArcade() ahora está en supabase-functions.js
 
-    if (!nombre) {
-        alert("😅 Escribe tu nombre primero.");
-        return;
-    }
-
-    db.collection("puntajes").add({
-        jugador: nombre,
-        score: score
-    })
-        .then(() => {
-            document.getElementById('arcade-game-over').classList.add('hidden');
-            alert("✅ Puntaje guardado con estilo arcade.");
-            mostrarPuntajes(); // opcional
-        })
-        .catch(error => {
-            console.error("❌ Error al guardar puntaje:", error);
-        });
-}
-
-function mostrarPuntajes() {
-    const tbody = document.querySelector("#leaderboard-table tbody");
-    tbody.innerHTML = ""; // Limpiar antes de cargar
-
-    db.collection("puntajes")
-        .orderBy("score", "desc")
-        .limit(10)
-        .get()
-        .then((snapshot) => {
-            let i = 1;
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                const fila = document.createElement("tr");
-                fila.innerHTML = `
-          <td>${i++}</td>
-          <td>${data.jugador}</td>
-          <td>${data.score}</td>
-        `;
-                tbody.appendChild(fila);
-            });
-        })
-        .catch((error) => {
-            console.error("❌ Error al mostrar puntajes:", error);
-        });
-}
+// mostrarPuntajes() ahora está en supabase-functions.js
 function mostrarGameOverArcade(score) {
     document.getElementById('arcade-score').innerText = score;
     document.getElementById('arcade-game-over').classList.remove('hidden');
-   
+
 
 }
 function forzarGameOverArcade() {
