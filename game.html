@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="css/game.css">
 </head>
 
-<body onload="mostrarPuntajes()">
+<body class="tetris-body">
     <!-- Animated Background -->
     <div class="animated-bg">
         <div class="bg-shape shape-1"></div>
@@ -128,9 +128,7 @@
                     <span id="arcade-score" class="final-score">0</span>
                 </div>
                 <input type="text" id="arcade-nombre" placeholder="INGRESA TU NOMBRE..." maxlength="20">
-                <textarea id="arcade-comentario" placeholder="DÉJAME UN COMENTARIO... (OPCIONAL)" maxlength="200"
-                    rows="3"></textarea>
-                <button class="btn-save-score" onclick="guardarPuntajeArcade()">
+                <button class="btn-save-score" id="btn-save-arcade">
                     💾 GUARDAR PUNTAJE
                 </button>
             </div>
@@ -145,13 +143,12 @@
         </div>
     </footer>
 
-    <!-- Scripts -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
-    <!-- Supabase Client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="dist/js/supabase-init.js"></script>
-    <script src="dist/js/supabase-functions.js"></script>
+    <!-- Firebase Compat Client -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    <script src="dist/js/firebase-game.js"></script>
     <script src="dist/js/source_game.js"></script>
     <script src="dist/js/mobile-controls.js"></script>
 </body>

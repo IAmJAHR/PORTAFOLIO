@@ -1,186 +1,153 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Portfolio de Juan Abel Huaman Rafael - Desarrollador especializado en PHP, JavaScript, C# y SAP Business One">
-    <meta name="author" content="Juan Abel Huaman Rafael">
-    <link rel="icon" type="image/png" href="image/icono.png">
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Orbitron:wght@400;700;900&display=swap"
-        rel="stylesheet">
-
-    <!-- Font Awesome for icons -->
+    <title>Juan Abel - Hacker / Developer</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600;700&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css">
     <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
     <link rel="stylesheet" href="css/index.css">
-
-    <title>Juan Abel - Desarrollador Full Stack</title>
 </head>
+<body>
+    <!-- Particles Background -->
+    <div id="particles-js"></div>
 
-<body onload="scrollTitle()">
-    <!-- Animated Background -->
-    <div class="animated-bg">
-        <div class="bg-shape shape-1"></div>
-        <div class="bg-shape shape-2"></div>
-        <div class="bg-shape shape-3"></div>
-    </div>
-
-    <!-- Encabezado Mejorado -->
-    <header class="header-modern">
-        <div class="container-header">
-            <div class="title-section">
-                <h1>Juan Abel Huaman Rafael</h1>
-                <p class="subtitle">👨‍💻 Desarrollador Full Stack | SAP B1 | PHP | JS</p>
+    <header class="tech-header">
+        <div class="header-content">
+            <div class="logo-container">
+                <span class="bracket">{</span><span class="logo-text">J_ABEL</span><span class="bracket">}</span>
             </div>
-            <nav class="nav-modern">
-                <ul>
-                    <li><a href="#about">Sobre mí</a></li>
-                    <li><a href="#projects">Proyectos</a></li>
-                    <li><a href="#contact">Contacto</a></li>
-                </ul>
+            <nav class="tech-nav">
+                <a href="#about">[01_About]</a>
+                <a href="#projects">[02_Projects]</a>
+                <a href="#contact">[03_Contact]</a>
             </nav>
         </div>
     </header>
 
-    <main>
-        <!-- Sección: Sobre mí -->
-        <section id="about" class="about-section" data-aos="fade-up">
-            <div class="card about-content glass-card">
-                <img src="image/imagen-logo.png" alt="Foto de perfil de Juan Abel" class="profile-pic">
-                <div class="about-text">
-                    <h2 class="section-title"><i class="fa-solid fa-code"></i> Sobre mí</h2>
-                    <p>
-                        ¡Hola! Soy <strong>Juan Abel</strong>, desarrollador full-stack especializado en crear
-                        <em>soluciones web modernas</em> y <em>sistemas empresariales robustos</em>.
-                        Domino <strong>PHP</strong>, <strong>JavaScript</strong>, <strong>C#</strong> y
-                        <strong>SQL</strong>,
-                        con experiencia profunda en <strong>SAP Business One</strong> utilizando <code>DI-API</code>
-                        y bases de datos <strong>SAP HANA</strong>.
-                    </p>
-                    <p>
-                        Mi experiencia incluye el desarrollo de sistemas de gestión completos para
-                        <strong>almacenes</strong>, <strong>ventas</strong> y <strong>logística</strong> en el sector
-                        industrial.
-                        Transformo ideas en código eficiente, optimizo procesos y creo interfaces que los usuarios
-                        adoran.
-                        Siempre aprendiendo, siempre mejorando. 🚀
-                    </p>
+    <main class="main-content">
+        <section class="hero">
+            <h1 class="glitch-text" data-text="JUAN ABEL HUAMAN">JUAN ABEL HUAMAN</h1>
+            <div class="terminal-box">
+                <span class="prompt">root@dev:~$</span> <span id="typed-output"></span>
+            </div>
+        </section>
+
+        <section id="about" class="glass-panel" data-aos="fade-up">
+            <div class="about-grid">
+                <div class="profile-hologram">
+                    <div class="scanline"></div>
+                    <img src="image/imagen-logo.png" alt="Juan Abel">
+                </div>
+                <div class="about-info">
+                    <h2><i class="fas fa-terminal"></i> SYSTEM.INFO</h2>
+                    <p>Desarrollador full-stack especializado en <strong>arquitecturas escalables</strong> y <strong>soluciones empresariales</strong>. Dominio profundo de Node.js, PHP, C# y SQL. Experto en integración con <strong>SAP Business One (DI-API / HANA)</strong>.</p>
+                    
                     <div class="tech-stack">
-                        <h3>Mi Stack Tecnológico</h3>
-                        <div class="icons-container">
-                            <div class="tech-icon" data-aos="zoom-in" data-aos-delay="100">
-                                <i class="devicon-php-plain" title="PHP"></i>
-                                <span>PHP</span>
-                            </div>
-                            <div class="tech-icon" data-aos="zoom-in" data-aos-delay="200">
-                                <i class="devicon-javascript-plain" title="JavaScript"></i>
-                                <span>JavaScript</span>
-                            </div>
-                            <div class="tech-icon" data-aos="zoom-in" data-aos-delay="300">
-                                <i class="devicon-csharp-plain" title="C#"></i>
-                                <span>C#</span>
-                            </div>
-                            <div class="tech-icon" data-aos="zoom-in" data-aos-delay="400">
-                                <i class="devicon-mysql-plain-wordmark" title="SQL"></i>
-                                <span>MySQL</span>
-                            </div>
+                        <h3>> LOAD_MODULES:</h3>
+                        <div class="icons-grid">
+                            <div class="tech-item"><i class="devicon-nodejs-plain colored"></i><span>Node.js</span></div>
+                            <div class="tech-item"><i class="devicon-php-plain colored"></i><span>PHP</span></div>
+                            <div class="tech-item"><i class="devicon-javascript-plain colored"></i><span>JavaScript</span></div>
+                            <div class="tech-item"><i class="devicon-csharp-plain colored"></i><span>C#</span></div>
+                            <div class="tech-item"><i class="devicon-mysql-plain colored"></i><span>MySQL</span></div>
+                            <div class="tech-item"><i class="devicon-firebase-plain colored"></i><span>Firebase</span></div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Sección: Proyectos -->
-        <section id="projects" class="projects" data-aos="fade-up">
-            <div class="container">
-                <h2 class="section-title"><i class="fa-solid fa-laptop-code"></i> Proyectos</h2>
-                <div class="projects-grid">
-                    <div class="card project-card glass-card" data-aos="zoom-in" data-aos-delay="100">
-                        <div class="project-image-wrapper">
-                            <img src="image/logo-tetris.png" alt="Proyecto Tetris">
-                            <div class="project-overlay">
-                                <span class="project-tag">🎮 Gaming</span>
-                            </div>
-                        </div>
-                        <div class="project-content">
-                            <h3>🎮 Videojuego Tetris</h3>
-                            <p>Juego tipo arcade con ranking Firebase, pausa, predicción de pieza y diseño responsive.
-                                Interfaz moderna con efectos glassmorphism.</p>
-                            <a class="project-button" href="game.html" target="_blank">
-                                <i class="fa-solid fa-gamepad"></i> Jugar ahora
-                            </a>
+        <section id="projects" class="projects-section">
+            <h2 class="section-title" data-aos="fade-right">> EXECUTE_PROJECTS</h2>
+            <div class="projects-grid">
+                
+                <div class="cyber-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-image">
+                        <img src="image/api_sunat_new.png" alt="API">
+                        <div class="overlay-tech">
+                            <span>STATUS: ONLINE</span>
                         </div>
                     </div>
-
-                    <div class="card project-card glass-card" data-aos="zoom-in" data-aos-delay="200">
-                        <div class="project-image-wrapper">
-                            <img src="image/icono_chat.png" alt="Chat">
-                            <div class="project-overlay">
-                                <span class="project-tag">💬 Web App</span>
-                            </div>
-                        </div>
-                        <div class="project-content">
-                            <h3>💬 Chat en Tiempo Real</h3>
-                            <p>Aplicación de mensajería instantánea desarrollada con Laravel, WebSockets (Pusher),
-                                Bootstrap 5 y
-                                autenticación con Laravel Breeze. Permite conversaciones en tiempo real entre usuarios
-                                autenticados.
-                            </p>
-                            <a class="project-button disabled" href="#">
-                                <i class="fa-solid fa-wrench"></i> En desarrollo
-                            </a>
-                        </div>
+                    <div class="card-content">
+                        <h3>[ API SUNAT & T.C. ]</h3>
+                        <p>API REST (Node.js/Express) para consulta de RUC, DNI y Tipo de Cambio. Integración de Web Scraping (Puppeteer) y Firebase.</p>
+                        <a href="https://api-tipo-cambio-1.onrender.com/?#documentacion" target="_blank" class="cyber-btn">INITIALIZE <i class="fas fa-bolt"></i></a>
                     </div>
                 </div>
-            </div>
-        </section>
 
-        <!-- Sección: Contacto -->
-        <section id="contact" class="contact-section" data-aos="fade-up">
-            <div class="card contact-container glass-card">
-                <h2 class="section-title"><i class="fa-solid fa-envelope-open-text"></i> Contacto</h2>
-                <p>¿Tienes un proyecto en mente o quieres colaborar? ¡Hablemos y hagamos algo increíble juntos!</p>
-
-                <div class="contact-links">
-                    <a href="mailto:jabelxd1@gmail.com" class="contact-button">
-                        <i class="fa-solid fa-paper-plane"></i> Enviar correo
-                    </a>
-                    <a href="https://www.linkedin.com/in/juan-abel-huaman-rafael-1987572b8/" target="_blank"
-                        class="contact-button linkedin">
-                        <i class="fa-brands fa-linkedin"></i> LinkedIn
-                    </a>
+                <div class="cyber-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card-image">
+                        <img src="image/logo-tetris.png" alt="Tetris">
+                    </div>
+                    <div class="card-content">
+                        <h3>[ ARCADE_TETRIS ]</h3>
+                        <p>Juego arcade con renderizado HTML5 Canvas, sistema de ranking global en tiempo real (Firestore) y físicas personalizadas.</p>
+                        <a href="game.html" target="_blank" class="cyber-btn">PLAY_NOW <i class="fas fa-gamepad"></i></a>
+                    </div>
                 </div>
+
+                <div class="cyber-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="card-image">
+                        <img src="image/icono_chat.png" alt="Chat">
+                    </div>
+                    <div class="card-content">
+                        <h3>[ SECURE_CHAT ]</h3>
+                        <p>Plataforma de comunicación en tiempo real desarrollada con React y WebSockets. Encriptación end-to-end.</p>
+                        <a href="#" class="cyber-btn disabled">OFFLINE</a>
+                    </div>
+                </div>
+
             </div>
         </section>
+        
+        <footer id="contact" class="tech-footer">
+            <div class="social-links">
+                <a href="#"><i class="fab fa-github"></i></a>
+                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+            <p>> SYSTEM.HALT() - © 2024 JUAN ABEL</p>
+        </footer>
     </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-content">
-            <p>&copy; <span id="current-year"></span> Juan Abel Huaman Rafael. Todos los derechos reservados.</p>
-            <p class="footer-subtitle">Hecho con <span class="heart">❤️</span> y mucho código</p>
-        </div>
-    </footer>
-
     <!-- Scripts -->
-    <script src="dist/js/source_index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        AOS.init({
-            duration: 800,
-            once: true,
-            offset: 100
+        AOS.init({ duration: 800, once: true });
+        
+        // Particles.js Config
+        particlesJS("particles-js", {
+            particles: {
+                number: { value: 60, density: { enable: true, value_area: 800 } },
+                color: { value: "#00f3ff" },
+                shape: { type: "circle" },
+                opacity: { value: 0.5, random: true },
+                size: { value: 3, random: true },
+                line_linked: { enable: true, distance: 150, color: "#00f3ff", opacity: 0.2, width: 1 },
+                move: { enable: true, speed: 2, direction: "none", random: false, out_mode: "out" }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: { onhover: { enable: true, mode: "grab" }, onclick: { enable: true, mode: "push" } },
+                modes: { grab: { distance: 200, line_linked: { opacity: 0.6 } } }
+            },
+            retina_detect: true
         });
-        document.getElementById("current-year").textContent = new Date().getFullYear();
+
+        // Typed.js Config
+        new Typed('#typed-output', {
+            strings: ['Desarrollador Full Stack', 'Especialista en SAP Business One', 'Ingeniero de Software', 'Amante del Código'],
+            typeSpeed: 50,
+            backSpeed: 30,
+            backDelay: 2000,
+            loop: true
+        });
     </script>
 </body>
-
 </html>
