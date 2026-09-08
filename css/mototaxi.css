@@ -1,0 +1,158 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Rajdhani:wght@600;700&display=swap');
+
+body {
+    margin: 0;
+    overflow: hidden; /* Evitar scroll en el canvas 3D */
+    background-color: #050505;
+    font-family: 'Rajdhani', sans-serif;
+    color: #00f3ff;
+}
+
+#game-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+}
+
+/* UI SUPERPUESTA */
+#ui-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10;
+    pointer-events: none; /* Dejar pasar los clicks al canvas si es necesario */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.hud-top {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 40px;
+}
+
+.score-board {
+    background: rgba(10, 15, 25, 0.8);
+    border: 1px solid rgba(0, 243, 255, 0.5);
+    padding: 10px 30px;
+    border-radius: 5px;
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+}
+
+.score-board h2 {
+    margin: 0;
+    font-size: 2rem;
+    text-shadow: 0 0 10px #00f3ff;
+}
+
+.btn-back {
+    pointer-events: auto;
+    background: rgba(188, 19, 254, 0.2);
+    border: 1px solid #bc13fe;
+    color: #bc13fe;
+    padding: 10px 20px;
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+.btn-back:hover {
+    background: #bc13fe;
+    color: #fff;
+    box-shadow: 0 0 15px #bc13fe;
+}
+
+/* GAME OVER SCREEN */
+#game-over-screen {
+    position: absolute;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    pointer-events: auto; /* Para poder clickear el botón de reinicio */
+}
+
+.hidden {
+    display: none !important;
+}
+
+#game-over-screen h1 {
+    font-size: 4rem;
+    color: #ff003c;
+    text-shadow: 0 0 20px #ff003c;
+    margin-bottom: 10px;
+}
+
+#game-over-screen h2 {
+    font-size: 2rem;
+    color: #fff;
+    margin-bottom: 40px;
+}
+
+.btn-restart {
+    background: transparent;
+    border: 2px solid #00f3ff;
+    color: #00f3ff;
+    padding: 15px 40px;
+    font-size: 1.5rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-restart:hover {
+    background: #00f3ff;
+    color: #000;
+    box-shadow: 0 0 20px #00f3ff;
+}
+
+/* CONTROLES MÓVILES */
+.mobile-controls {
+    position: absolute;
+    bottom: 30px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 40px;
+    box-sizing: border-box;
+    pointer-events: none;
+}
+
+.btn-mobile {
+    pointer-events: auto;
+    width: 80px;
+    height: 80px;
+    background: rgba(0, 243, 255, 0.1);
+    border: 2px solid rgba(0, 243, 255, 0.5);
+    border-radius: 50%;
+    color: #00f3ff;
+    font-size: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+    user-select: none;
+}
+
+.btn-mobile:active {
+    background: rgba(0, 243, 255, 0.4);
+    transform: scale(0.9);
+}
+
+@media (min-width: 769px) {
+    .mobile-controls {
+        display: none !important;
+    }
+}

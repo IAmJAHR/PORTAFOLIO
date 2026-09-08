@@ -2,88 +2,47 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mototaxi 3D - En Desarrollo</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #050505;
-            color: #bc13fe;
-            font-family: 'Fira Code', monospace;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            text-align: center;
-            background-image: radial-gradient(circle at 50% 50%, rgba(188, 19, 254, 0.1) 0%, transparent 60%);
-        }
-        .container {
-            border: 1px solid rgba(188, 19, 254, 0.5);
-            padding: 40px;
-            background: rgba(10, 15, 25, 0.85);
-            box-shadow: 0 0 30px rgba(188, 19, 254, 0.3);
-            border-radius: 8px;
-        }
-        h1 {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 3rem;
-            margin: 0 0 20px 0;
-            text-shadow: 0 0 15px rgba(188, 19, 254, 0.8);
-        }
-        p {
-            font-size: 1.2rem;
-            color: #e0e6ed;
-            margin-bottom: 30px;
-        }
-        .loading-bar {
-            width: 100%;
-            height: 10px;
-            background: #222;
-            border-radius: 5px;
-            overflow: hidden;
-            position: relative;
-        }
-        .loading-progress {
-            width: 30%;
-            height: 100%;
-            background: #bc13fe;
-            box-shadow: 0 0 10px #bc13fe;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0% { opacity: 0.6; width: 30%; }
-            50% { opacity: 1; width: 45%; }
-            100% { opacity: 0.6; width: 30%; }
-        }
-        .btn-back {
-            display: inline-block;
-            margin-top: 30px;
-            padding: 10px 20px;
-            color: #00f3ff;
-            border: 1px solid #00f3ff;
-            text-decoration: none;
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-        .btn-back:hover {
-            background: #00f3ff;
-            color: #000;
-            box-shadow: 0 0 15px #00f3ff;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mototaxi 3D Simulator</title>
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/mototaxi.css">
 </head>
 <body>
-    <div class="container">
-        <h1>[ SYSTEM_BUILDING ]</h1>
-        <p>Inicializando entorno 3D, físicas y modelos...</p>
-        <div class="loading-bar">
-            <div class="loading-progress"></div>
+    
+    <!-- Canvas Contenedor de Three.js -->
+    <div id="game-container"></div>
+
+    <!-- UI Overlay -->
+    <div id="ui-layer">
+        <div class="hud-top">
+            <a href="index.html" class="btn-back"><i class="fas fa-arrow-left"></i> SALIR</a>
+            <div class="score-board">
+                <h2>SCORE: <span id="score-display">0</span></h2>
+            </div>
         </div>
-        <p style="margin-top: 20px; font-size: 0.9rem; color: #8b9bb4;">> Cargando texturas de Mototaxi: Pendiente...</p>
-        <a href="index.html" class="btn-back"><i class="fas fa-arrow-left"></i> VOLVER AL PORTAFOLIO</a>
+
+        <!-- Controles móviles (ocultos en PC por CSS) -->
+        <div class="mobile-controls">
+            <div class="btn-mobile" id="btn-left"><i class="fas fa-arrow-left"></i></div>
+            <div class="btn-mobile" id="btn-right"><i class="fas fa-arrow-right"></i></div>
+        </div>
     </div>
+
+    <!-- Pantalla de Game Over -->
+    <div id="game-over-screen" class="hidden">
+        <h1>SYSTEM FAILURE</h1>
+        <h2>HAS CHOCADO</h2>
+        <h2 style="color: #00f3ff; margin-top: -20px; font-size: 1.5rem;">SCORE FINAL: <span id="final-score">0</span></h2>
+        <button id="btn-restart" class="btn-restart"><i class="fas fa-redo"></i> REINICIAR</button>
+    </div>
+
+    <!-- Three.js Librería Base -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Lógica del Juego -->
+    <script src="dist/js/mototaxi_game.js"></script>
+
 </body>
 </html>
