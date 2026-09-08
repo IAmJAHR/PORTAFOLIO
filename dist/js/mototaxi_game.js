@@ -1,10 +1,11 @@
-// 🛺 Mototaxi 3D Simulator - V3 (Modelo Realista 3D Warehouse)
+// 🛺 Mototaxi 3D Simulator - V4 (Camino delimitado y Cerros)
 
 (function() {
     // Variables principales
     let scene, camera, renderer;
-    let mototaxi, road;
+    let mototaxi, road, ground;
     let obstacles = [];
+    let mountains = [];
     let isGameOver = false;
     let score = 0;
     let speed = 1.0;
@@ -28,7 +29,7 @@
         
         // Ambiente de "Trocha" / Día polvoriento
         scene.background = new THREE.Color(0xd2b48c);
-        scene.fog = new THREE.Fog(0xd2b48c, 30, 150);
+        scene.fog = new THREE.Fog(0xd2b48c, 30, 250);
 
         renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -47,7 +48,7 @@
         dirLight.castShadow = true;
         scene.add(dirLight);
 
-        // Crear el mundo y mototaxi pulida
+        // Crear el mundo y mototaxi
         createEnvironment();
         createPolishedMototaxi();
 
@@ -76,35 +77,73 @@
     }
 
     function createEnvironment() {
-        // Generar textura procedural de tierra/barro (Trocha)
-        const canvas = document.createElement('canvas');
-        canvas.width = 512; 
-        canvas.height = 512;
-        const ctx = canvas.getContext('2d');
-        
-        ctx.fillStyle = '#8b5a2b'; // Base marrón oscuro
-        ctx.fillRect(0, 0, 512, 512);
-        
-        // Agregar "piedritas" y ruido
-        for(let i = 0; i < 15000; i++) {
-            ctx.fillStyle = Math.random() > 0.5 ? '#a0522d' : '#6b4226';
-            const x = Math.random() * 512;
-            const y = Math.random() * 512;
-            const s = Math.random() * 3;
-            ctx.fillRect(x, y, s, s);
+        // 1. TERRENO EXTERIOR (Tierra/Pasto)
+        const canvasDirt = document.createElement('canvas');
+        canvasDirt.width = 512; canvasDirt.height = 512;
+        const ctxDirt = canvasDirt.getContext('2d');
+        ctxDirt.fillStyle = '#6b4226';
+        ctxDirt.fillRect(0, 0, 512, 512);
+        for(let i = 0; i < 20000; i++) {
+            ctxDirt.fillStyle = Math.random() > 0.5 ? '#8b5a2b' : '#556b2f';
+            ctxDirt.fillRect(Math.random()*512, Math.random()*512, 3, 3);
         }
-        
-        const dirtTexture = new THREE.CanvasTexture(canvas);
-        dirtTexture.wrapS = THREE.RepeatWrapping;
-        dirtTexture.wrapT = THREE.RepeatWrapping;
-        dirtTexture.repeat.set(10, 500); // Estirar en el eje Z
+        const dirtTex = new THREE.CanvasTexture(canvasDirt);
+        dirtTex.wrapS = THREE.RepeatWrapping; dirtTex.wrapT = THREE.RepeatWrapping;
+        dirtTex.repeat.set(50, 1000);
 
-        const floorGeo = new THREE.PlaneGeometry(100, 10000);
-        const floorMat = new THREE.MeshLambertMaterial({ map: dirtTexture });
-        road = new THREE.Mesh(floorGeo, floorMat);
+        const groundGeo = new THREE.PlaneGeometry(400, 20000);
+        const groundMat = new THREE.MeshLambertMaterial({ map: dirtTex });
+        ground = new THREE.Mesh(groundGeo, groundMat);
+        ground.rotation.x = -Math.PI / 2;
+        ground.position.y = -0.1;
+        ground.receiveShadow = true;
+        scene.add(ground);
+
+        // 2. PISTA CENTRAL (Trocha delimitada)
+        const canvasRoad = document.createElement('canvas');
+        canvasRoad.width = 512; canvasRoad.height = 512;
+        const ctxRoad = canvasRoad.getContext('2d');
+        ctxRoad.fillStyle = '#9e8c78'; 
+        ctxRoad.fillRect(0, 0, 512, 512);
+        for(let i = 0; i < 10000; i++) {
+            ctxRoad.fillStyle = Math.random() > 0.5 ? '#c3b091' : '#8b7355';
+            ctxRoad.fillRect(Math.random()*512, Math.random()*512, 2, 2);
+        }
+        // Bordes más oscuros para delimitar
+        ctxRoad.fillStyle = '#4a3b2c';
+        ctxRoad.fillRect(0, 0, 15, 512);
+        ctxRoad.fillRect(497, 0, 15, 512);
+
+        const roadTex = new THREE.CanvasTexture(canvasRoad);
+        roadTex.wrapS = THREE.RepeatWrapping; roadTex.wrapT = THREE.RepeatWrapping;
+        roadTex.repeat.set(1, 1000);
+
+        const roadGeo = new THREE.PlaneGeometry(16, 20000);
+        const roadMat = new THREE.MeshLambertMaterial({ map: roadTex });
+        road = new THREE.Mesh(roadGeo, roadMat);
         road.rotation.x = -Math.PI / 2;
         road.receiveShadow = true;
         scene.add(road);
+    }
+
+    function spawnMountain(zPos) {
+        const sides = Math.floor(Math.random() * 3) + 4;
+        const radius = 30 + Math.random() * 50;
+        const height = 40 + Math.random() * 80;
+        
+        const geo = new THREE.ConeGeometry(radius, height, sides);
+        const color = new THREE.Color().setHSL(0.08, 0.4, 0.3 + Math.random() * 0.1);
+        const mat = new THREE.MeshLambertMaterial({ color: color, flatShading: true });
+        
+        const mtn = new THREE.Mesh(geo, mat);
+        
+        // Poner a los lados (izquierda o derecha)
+        const side = Math.random() > 0.5 ? 1 : -1;
+        const xPos = side * (40 + Math.random() * 80);
+        
+        mtn.position.set(xPos, height / 2 - 5, zPos);
+        scene.add(mtn);
+        mountains.push(mtn);
     }
 
     function createPolishedMototaxi() {
@@ -161,7 +200,7 @@
 
         mototaxi.add(placeholderGroup);
 
-        // --- FARO TRASERO Y DELANTERO PARA LA ESCENA ---
+        // --- FARO DELANTERO ---
         const headlight = new THREE.SpotLight(0xffffff, 1.5, 50, Math.PI/4, 0.5, 1);
         headlight.position.set(0, 1.5, -2.3);
         headlight.target.position.set(0, 0, -20);
@@ -174,28 +213,23 @@
             loader.load('modelos/model.dae', function (collada) {
                 const dae = collada.scene;
                 
-                // Normalizar escala (Los modelos de SketchUp suelen ser GIGANTES o minúsculos)
                 const box = new THREE.Box3().setFromObject(dae);
                 const size = box.getSize(new THREE.Vector3());
                 const maxDim = Math.max(size.x, size.y, size.z);
-                const targetSize = 6; // Tamaño deseado para que encaje en los carriles
+                const targetSize = 6; 
                 const scale = targetSize / maxDim;
                 dae.scale.set(scale, scale, scale);
                 
-                // Centrar modelo y arreglar rotación si viene mal
                 const center = box.getCenter(new THREE.Vector3());
                 dae.position.x = -center.x * scale;
-                dae.position.y = (-box.min.y * scale); // Que toque el piso
+                dae.position.y = (-box.min.y * scale); 
                 dae.position.z = -center.z * scale;
                 
-                // Asegurarnos de que mire hacia -Z (A veces miran a X o Z positivo)
-                // Usualmente SketchUp orienta a X o Y. 
-                // Añadimos el dae a un wrapper para rotarlo si es necesario
                 const wrapper = new THREE.Group();
                 wrapper.add(dae);
-                // Si el modelo viene rotado mal, aquí podemos ajustarlo (wrapper.rotation.y = Math.PI;)
+                // Si la mototaxi carga de costado, rotar aquí: wrapper.rotation.y = Math.PI / 2;
+                // Si carga mirando al jugador, rotar aquí: wrapper.rotation.y = Math.PI;
                 
-                // Habilitar sombras en todos los meshes del DAE
                 dae.traverse(function (child) {
                     if (child.isMesh) {
                         child.castShadow = true;
@@ -203,7 +237,6 @@
                     }
                 });
 
-                // Remover la mototaxi temporal y agregar la real
                 mototaxi.remove(placeholderGroup);
                 mototaxi.add(wrapper);
                 console.log("¡Modelo 3D cargado con éxito!");
@@ -222,23 +255,20 @@
         let obs = new THREE.Group();
         let type = 'crash';
         
-        // Carriles disponibles
+        // Carriles disponibles en la pista (Ancho 16, carriles de -6 a 6)
         const lanes = [-6, -3, 0, 3, 6];
         const lane = lanes[Math.floor(Math.random() * lanes.length)];
 
         if (rand < 0.25) {
-            // 1. BACHE (Hueco en la tierra)
             const geo = new THREE.CylinderGeometry(1.5, 1.5, 0.05, 16);
-            const mat = new THREE.MeshBasicMaterial({ color: 0x221100 }); // Barro muy oscuro
+            const mat = new THREE.MeshBasicMaterial({ color: 0x221100 }); 
             const mesh = new THREE.Mesh(geo, mat);
             mesh.position.y = 0.02;
             obs.add(mesh);
             type = 'bache';
         } 
         else if (rand < 0.5) {
-            // 2. ROMPEMUELLES
             const geo = new THREE.CylinderGeometry(0.4, 0.4, 6, 16);
-            // Textura a rayas amarillas y negras (simulada)
             const mat = new THREE.MeshLambertMaterial({ color: 0xddaa00 });
             const mesh = new THREE.Mesh(geo, mat);
             mesh.rotation.z = Math.PI / 2;
@@ -247,24 +277,19 @@
             type = 'bump';
         } 
         else if (rand < 0.75) {
-            // 3. PERSONA (Peatón cruzando)
             const clothesColors = [0x0044ff, 0xff0044, 0x00ff44, 0xeeeeee];
             const pColor = clothesColors[Math.floor(Math.random() * clothesColors.length)];
-            
             const body = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 1.5), new THREE.MeshLambertMaterial({color: pColor}));
             body.position.y = 0.75;
             body.castShadow = true;
-            
             const head = new THREE.Mesh(new THREE.SphereGeometry(0.35), new THREE.MeshLambertMaterial({color: 0xffcc99}));
             head.position.y = 1.7;
             head.castShadow = true;
-            
             obs.add(body);
             obs.add(head);
             type = 'persona';
         } 
         else {
-            // 4. ROCA / OBSTÁCULO GRANDE
             const geo = new THREE.DodecahedronGeometry(1.2);
             const mat = new THREE.MeshLambertMaterial({ color: 0x555555 });
             const mesh = new THREE.Mesh(geo, mat);
@@ -300,7 +325,6 @@
         if (isGameOver) return;
         requestAnimationFrame(animate);
 
-        // Movimiento lateral
         const moveSpeed = 0.3 + (speed * 0.1);
         if (keys.ArrowLeft && mototaxi.position.x > -8) {
             mototaxi.position.x -= moveSpeed;
@@ -315,12 +339,9 @@
             mototaxi.rotation.y = THREE.MathUtils.lerp(mototaxi.rotation.y, 0, 0.1);
         }
 
-        // Físicas del salto (rompemuelles)
         if (mototaxi.position.y > 0 || bumpVelocity > 0) {
             mototaxi.position.y += bumpVelocity;
-            bumpVelocity -= 0.02; // Gravedad
-            
-            // Efecto de levantar la llanta delantera al saltar
+            bumpVelocity -= 0.02; 
             mototaxi.rotation.x = THREE.MathUtils.lerp(mototaxi.rotation.x, -0.2, 0.1);
             
             if (mototaxi.position.y <= 0) {
@@ -332,63 +353,63 @@
             mototaxi.rotation.x = THREE.MathUtils.lerp(mototaxi.rotation.x, 0, 0.1);
         }
 
-        // Avanzar
         mototaxi.position.z -= speed;
-        
-        // Puntuación
         score += speed * 0.1;
         scoreDisplay.innerText = Math.floor(score);
-        speed += 0.0005; // Acelerar progresivamente
+        speed += 0.0005; 
 
-        // Mover cámara
         camera.position.z = mototaxi.position.z + 12;
         camera.position.x = THREE.MathUtils.lerp(camera.position.x, mototaxi.position.x * 0.6, 0.1);
         camera.position.y = mototaxi.position.y + 6;
 
-        // Generar obstáculos
         if (obstacles.length < 20) {
             const lastZ = obstacles.length > 0 ? obstacles[obstacles.length-1].position.z : mototaxi.position.z;
             spawnObstacle(lastZ - 20 - Math.random() * 40);
         }
 
-        // Animación de personas y colisiones
+        if (mountains.length < 15) {
+            const lastMZ = mountains.length > 0 ? mountains[mountains.length-1].position.z : mototaxi.position.z;
+            spawnMountain(lastMZ - 80 - Math.random() * 100);
+        }
+
         const taxiBox = new THREE.Box3().setFromObject(mototaxi);
-        taxiBox.expandByScalar(-0.4); // Hitbox más permisiva
+        taxiBox.expandByScalar(-0.4); 
 
         for (let i = obstacles.length - 1; i >= 0; i--) {
             const obs = obstacles[i];
             
-            // Si es persona, hacerla caminar lentamente a través de la pista
             if (obs.userData.type === 'persona') {
                 obs.position.x += Math.sin(Date.now() * 0.001 + obs.position.z) * 0.05;
             }
 
-            // Chequeo de colisión
             if (!obs.userData.hit) {
                 const obsBox = new THREE.Box3().setFromObject(obs);
                 if (obs.userData.type === 'bache' || obs.userData.type === 'bump') {
-                    // Los baches y rompemuelles son planos, hacemos su hitbox más chato
                     obsBox.max.y = 1;
                 }
 
                 if (taxiBox.intersectsBox(obsBox)) {
                     if (obs.userData.type === 'bump') {
-                        // Rompemuelles: Solo hace saltar la mototaxi y reduce la velocidad un poco
                         bumpVelocity = 0.3;
                         speed = Math.max(0.8, speed - 0.2);
                         obs.userData.hit = true;
                     } else {
-                        // Bache, Persona o Roca: GAME OVER
                         triggerGameOver();
                         return;
                     }
                 }
             }
 
-            // Remover obstáculos que ya pasaron
             if (obs.position.z > camera.position.z + 10) {
                 scene.remove(obs);
                 obstacles.splice(i, 1);
+            }
+        }
+        
+        for (let i = mountains.length - 1; i >= 0; i--) {
+            if (mountains[i].position.z > camera.position.z + 50) {
+                scene.remove(mountains[i]);
+                mountains.splice(i, 1);
             }
         }
 
@@ -413,6 +434,9 @@
         
         obstacles.forEach(obs => scene.remove(obs));
         obstacles = [];
+        
+        mountains.forEach(mtn => scene.remove(mtn));
+        mountains = [];
         
         gameOverScreen.classList.add('hidden');
         animate();
