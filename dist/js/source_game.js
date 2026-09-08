@@ -1,3 +1,4 @@
+(function() {
 document.addEventListener("contextmenu", function (e) {
     e.preventDefault();
 });
@@ -57,20 +58,43 @@ function createMatrix(w, h) {
 const arena = Array.from({ length: 20 }, () => Array(10).fill(0));
 
 function drawMatrix(matrix, offset) {
-    if (!matrix || !offset) return; // Añade esta línea para evitar errores si matrix o offset no están definidos
+    if (!matrix || !offset) return;
 
     matrix.forEach((row, y) => {
         row.forEach((value, x) => {
             if (value !== 0) {
-                context.fillStyle = determineColor(value); // Asigna un color basado en el tipo de pieza
-                context.fillRect((x + offset.x) * scale, (y + offset.y) * scale, scale, scale);
+                const px = (x + offset.x) * scale;
+                const py = (y + offset.y) * scale;
+                const color = determineColor(value);
+                
+                let currentAlpha = 1.0;
+                if (matrix === arena && typeof linesToClear !== 'undefined' && linesToClear.includes(y + offset.y)) {
+                    currentAlpha = typeof fadeAlpha !== 'undefined' ? fadeAlpha : 1.0;
+                    context.fillStyle = `rgba(255, 255, 255, ${currentAlpha})`;
+                    context.fillRect(px, py, scale, scale);
+                }
+                
+                context.globalAlpha = currentAlpha;
+                
+                context.fillStyle = color;
+                context.fillRect(px, py, scale, scale);
+                
+                context.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                context.fillRect(px, py, scale, 3);
+                context.fillRect(px, py, 3, scale);
+                
+                context.fillStyle = 'rgba(0, 0, 0, 0.4)';
+                context.fillRect(px, py + scale - 3, scale, 3);
+                context.fillRect(px + scale - 3, py, 3, scale);
+                
+                context.globalAlpha = 1.0;
             }
         });
     });
 }
 function determineColor(value) {
     const colors = [
-        null, 'red', 'blue', 'green', 'yellow', 'purple', 'orange', 'pink'
+        null, '#00D4FF', '#00FF87', '#FF00FF', '#FF007F', '#7F00FF', '#FFD93D', '#60EFFF'
     ];
     return colors[value];
 }
@@ -229,35 +253,47 @@ function playerDrop() {
 }
 
 function clearLines() {
-    let linesCleared = 0;
-
+    linesToClear = [];
+    
     for (let y = arena.length - 1; y >= 0; --y) {
-        // console.log(`Revisando línea ${y}: ${arena[y].join(",")}`);
-        // Verifica si toda la fila está llena (sin ceros)
         if (arena[y].every(cell => cell !== 0)) {
-            // console.log(`Línea ${y} está completa. Será eliminada.`);
-            arena.splice(y, 1); // Elimina la línea completa
-            arena.unshift(new Array(arena[0].length).fill(0)); // Añade una fila vacía arriba
-            linesCleared++;
-            y++; // Reajusta el índice
-        } else {
-            // console.log(`Línea ${y} no está completa.`);
+            linesToClear.push(y);
         }
     }
-    //    console.log(linesCleared +"  = lineas" );
 
-    // console.log(linesCleared > 0 ? "Líneas eliminadas:" : "No se eliminaron líneas.");
-
-    if (linesCleared > 0) {
-        // console.log(`${linesCleared} línea(s) eliminada(s).`);
-        updateScore(linesCleared);
-
-    } else {
-        // console.log("No se eliminaron líneas en esta jugada.");
+    if (linesToClear.length > 0) {
+        isClearing = true;
+        fadeAlpha = 1.0;
+        animateClearLines();
     }
-
-    // console.log("Estado del arena después de procesar:", JSON.stringify(arena));
 }
+
+function animateClearLines() {
+    fadeAlpha -= 0.1; 
+    
+    if (fadeAlpha <= 0) {
+        let linesCleared = 0;
+        for (let y = arena.length - 1; y >= 0; --y) {
+            if (arena[y].every(cell => cell !== 0)) {
+                arena.splice(y, 1);
+                arena.unshift(new Array(arena[0].length).fill(0));
+                linesCleared++;
+                y++; 
+            }
+        }
+        
+        updateScore(linesCleared);
+        isClearing = false;
+        linesToClear = [];
+    } else {
+        setTimeout(animateClearLines, 30); 
+    }
+}
+
+let isClearing = false;
+let linesToClear = [];
+let fadeAlpha = 1.0;
+
 let score = 0; // Inicializa el puntaje global
 
 function updateScore(linesCleared) {
@@ -363,7 +399,7 @@ let timerInterval;
 let levelInterval;
 let startTime;
 let elapsedTime = 0;
-function iniciar_juego() {
+window.iniciar_juego = function() {
     const startButton = document.getElementById('start-button');
     const pauseButton = document.getElementById('pause-button');
     const restartButton = document.getElementById('restart-button');
@@ -386,7 +422,7 @@ let isPaused = false; // Variable global para el estado de pausa
 const pauseButton = document.getElementById('pause-button');
 
 
-function togglePause() {
+window.togglePause = function() {
     isPaused = !isPaused;
     $("#start-button").hide();
 
@@ -424,19 +460,21 @@ function startGame() {
 
 
 function update(time = 0) {
-    if (isPaused) return; // No actualices si el juego está en pausa
+    if (isPaused) return; 
 
     const deltaTime = time - lastTime;
     lastTime = time;
 
-    dropCounter += deltaTime;
-    if (dropCounter > dropInterval) {
-        playerDrop();
-        dropCounter = 0;
+    if (!isClearing) {
+        dropCounter += deltaTime;
+        if (dropCounter > dropInterval) {
+            playerDrop();
+            dropCounter = 0;
+        }
     }
 
-    draw(); // Redibuja el estado actual del juego
-    requestAnimationFrame(update); // Continua el ciclo de actualización
+    draw(); 
+    requestAnimationFrame(update); 
 }
 function increaseLevel() {
     level++;
@@ -491,10 +529,9 @@ function playerReset() {
 //     update(); // Asegura que update se llama después de que el DOM esté completamente cargado
 // });
 function drawGrid() {
-    context.strokeStyle = '#ddd'; // Cambia el color de la cuadrícula a un gris claro
-    context.lineWidth = 0.03; // Asegúrate de que las líneas sean suficientemente sutiles
+    context.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+    context.lineWidth = 1;
 
-    // Dibujar líneas verticales
     for (let x = 0; x <= width; x++) {
         context.beginPath();
         context.moveTo(x * scale, 0);
@@ -502,7 +539,6 @@ function drawGrid() {
         context.stroke();
     }
 
-    // Dibujar líneas horizontales
     for (let y = 0; y <= height; y++) {
         context.beginPath();
         context.moveTo(0, y * scale);
@@ -524,11 +560,11 @@ function initNextPieces() {
 
 function updateNextDisplay() {
     const nextPieceDisplay = document.getElementById('next-display');
-    nextPieceDisplay.innerHTML = ''; // Limpia el contenido anterior
+    nextPieceDisplay.innerHTML = ''; 
 
     if (nextPieces.length > 0) {
-        const nextPiece = nextPieces[0].matrix; // ✅ Aquí accedemos a la matriz
-        const blockSize = 20;
+        const nextPiece = nextPieces[0].matrix; 
+        const blockSize = 18;
 
         nextPiece.forEach((row, y) => {
             row.forEach((value, x) => {
@@ -540,7 +576,11 @@ function updateNextDisplay() {
                     block.style.left = `${x * blockSize}px`;
                     block.style.top = `${y * blockSize}px`;
                     block.style.backgroundColor = determineColor(value);
-                    block.style.border = '1px solid #000';
+                    block.style.borderTop = '3px solid rgba(255,255,255,0.3)';
+                    block.style.borderLeft = '3px solid rgba(255,255,255,0.3)';
+                    block.style.borderBottom = '3px solid rgba(0,0,0,0.4)';
+                    block.style.borderRight = '3px solid rgba(0,0,0,0.4)';
+                    block.style.boxSizing = 'border-box';
                     nextPieceDisplay.appendChild(block);
                 }
             });
@@ -551,10 +591,7 @@ function updateNextDisplay() {
 }
 
 
-function determineColor(value) {
-    const colors = ['#FF0D72', '#0DC2FF', '#0DFF72', '#F538FF', '#FF8E0D', '#FFE138', '#3877FF'];
-    return colors[value - 1]; // Asumiendo que 'value' empieza en 1
-}
+
 
 // let startTime = Date.now();
 // let timerInterval = setInterval(updateTime, 1000);
@@ -568,22 +605,24 @@ function updateTime() {
 
 
 function update(time = 0) {
-    if (isPaused) return; // Detiene la ejecución si está en pausa
+    if (isPaused) return; 
 
     const deltaTime = time - lastTime;
     lastTime = time;
 
-    dropCounter += deltaTime;
-    if (dropCounter > dropInterval) {
-        playerDrop();
-        dropCounter = 0;
+    if (!isClearing) {
+        dropCounter += deltaTime;
+        if (dropCounter > dropInterval) {
+            playerDrop();
+            dropCounter = 0;
+        }
     }
 
-    draw(); // Redibuja el estado actual del juego
-    requestAnimationFrame(update); // Continúa el bucle de juego
+    draw(); 
+    requestAnimationFrame(update); 
 }
 
-function restartGame() {
+window.restartGame = function() {
     const scoreElement = document.getElementById('score');
     const levelElement = document.getElementById('level');
     const timeElement = document.getElementById('time');
@@ -600,6 +639,7 @@ function restartGame() {
     player.lines = 0;
     player.level = 1;
     dropInterval = 1000;
+    score = 0; // Reiniciar SCORE INTERNO
 
     // Reiniciar el DOM
     scoreElement.textContent = "0";
@@ -638,14 +678,43 @@ function restartGame() {
 // guardarPuntajeArcade() ahora está en supabase-functions.js
 
 // mostrarPuntajes() ahora está en supabase-functions.js
+
+// Lógica segura de guardado
+document.getElementById('btn-save-arcade').addEventListener('click', function() {
+    const nombre = document.getElementById("arcade-nombre").value.trim();
+    if (!nombre) {
+        alert("😅 Escribe tu nombre primero.");
+        return;
+    }
+
+    if (typeof window.saveScoreToFirebase === 'function') {
+        window.saveScoreToFirebase(nombre, score)
+            .then(() => {
+                document.getElementById('arcade-game-over').classList.add('hidden');
+                alert("✅ Puntaje guardado con estilo arcade.");
+                if(typeof window.mostrarPuntajes === 'function') {
+                    window.mostrarPuntajes();
+                }
+                document.getElementById("arcade-nombre").value = "";
+                window.restartGame(); 
+            })
+            .catch((error) => {
+                console.error("❌ Error al guardar puntaje:", error);
+                alert("❌ Error al guardar el puntaje. Intenta de nuevo.");
+            });
+    }
+});
+
 function mostrarGameOverArcade(score) {
     document.getElementById('arcade-score').innerText = score;
     document.getElementById('arcade-game-over').classList.remove('hidden');
 
 
 }
-function forzarGameOverArcade() {
+window.forzarGameOverArcade = function() {
     const score = parseInt(document.getElementById("score").innerText);
     mostrarGameOverArcade(score);
     togglePause();
 }
+
+})();
