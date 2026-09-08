@@ -128,7 +128,7 @@
 
     function spawnMountain(zPos) {
         const sides = Math.floor(Math.random() * 3) + 4;
-        const radius = 30 + Math.random() * 50;
+        const radius = 30 + Math.random() * 60;
         const height = 40 + Math.random() * 80;
         
         const geo = new THREE.ConeGeometry(radius, height, sides);
@@ -137,9 +137,10 @@
         
         const mtn = new THREE.Mesh(geo, mat);
         
-        // Poner a los lados (izquierda o derecha)
+        // Alejar los cerros dependiendo de su radio para que NO invadan la pista (ancho 16)
         const side = Math.random() > 0.5 ? 1 : -1;
-        const xPos = side * (40 + Math.random() * 80);
+        const margin = 20; // Espacio libre desde el centro
+        const xPos = side * (radius + margin + Math.random() * 50);
         
         mtn.position.set(xPos, height / 2 - 5, zPos);
         scene.add(mtn);
