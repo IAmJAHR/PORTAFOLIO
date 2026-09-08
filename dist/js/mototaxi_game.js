@@ -1,4 +1,4 @@
-// 🛺 Mototaxi 3D Simulator - V2 (Texturas, Baches, Personas y Rompemuelles)
+// 🛺 Mototaxi 3D Simulator - V3 (Modelo Realista 3D Warehouse)
 
 (function() {
     // Variables principales
@@ -109,65 +109,45 @@
 
     function createPolishedMototaxi() {
         mototaxi = new THREE.Group();
+        mototaxi.position.set(0, 0, 0);
+        scene.add(mototaxi);
 
-        const chassisMat = new THREE.MeshLambertMaterial({ color: 0xcc0000 }); // Roja clásica
-        const roofMat = new THREE.MeshLambertMaterial({ color: 0xeeeeee }); // Techo blanco
+        // --- MODELO TEMPORAL (MIENTRAS CARGA EL 3D REAL) ---
+        const placeholderGroup = new THREE.Group();
+        const chassisMat = new THREE.MeshLambertMaterial({ color: 0xcc0000 });
+        const roofMat = new THREE.MeshLambertMaterial({ color: 0xeeeeee });
         const blackMat = new THREE.MeshLambertMaterial({ color: 0x222222 });
         const glassMat = new THREE.MeshLambertMaterial({ color: 0xaaddff, transparent: true, opacity: 0.6 });
         const metalMat = new THREE.MeshLambertMaterial({ color: 0x888888 });
 
-        // Cabina Trasera (Pasajeros)
-        const cabinGeo = new THREE.BoxGeometry(3.5, 2.5, 3.5);
-        const cabin = new THREE.Mesh(cabinGeo, chassisMat);
+        const cabin = new THREE.Mesh(new THREE.BoxGeometry(3.5, 2.5, 3.5), chassisMat);
         cabin.position.set(0, 1.75, 1);
         cabin.castShadow = true;
-        mototaxi.add(cabin);
+        placeholderGroup.add(cabin);
 
-        // Techo (Lona)
-        const roofGeo = new THREE.BoxGeometry(3.7, 0.2, 5.5);
-        const roof = new THREE.Mesh(roofGeo, roofMat);
+        const roof = new THREE.Mesh(new THREE.BoxGeometry(3.7, 0.2, 5.5), roofMat);
         roof.position.set(0, 3.1, 0);
-        mototaxi.add(roof);
+        placeholderGroup.add(roof);
 
-        // Parabrisas
-        const glassGeo = new THREE.PlaneGeometry(2.5, 2);
-        const glass = new THREE.Mesh(glassGeo, glassMat);
+        const glass = new THREE.Mesh(new THREE.PlaneGeometry(2.5, 2), glassMat);
         glass.position.set(0, 2, -1.8);
         glass.rotation.x = -Math.PI / 8;
-        mototaxi.add(glass);
+        placeholderGroup.add(glass);
 
-        // Frente (Manubrio / faro)
-        const frontGeo = new THREE.BoxGeometry(1.5, 1.5, 1.5);
-        const front = new THREE.Mesh(frontGeo, chassisMat);
+        const front = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 1.5), chassisMat);
         front.position.set(0, 1, -1.5);
-        mototaxi.add(front);
+        placeholderGroup.add(front);
 
-        // Faro delantero
         const lightGeo = new THREE.CylinderGeometry(0.3, 0.3, 0.2, 16);
         lightGeo.rotateX(Math.PI / 2);
         const light = new THREE.Mesh(lightGeo, new THREE.MeshBasicMaterial({color: 0xffffff}));
         light.position.set(0, 1.2, -2.3);
-        mototaxi.add(light);
+        placeholderGroup.add(light);
         
-        // SpotLight simulando el faro de la mototaxi
-        const headlight = new THREE.SpotLight(0xffffff, 1.5, 50, Math.PI/4, 0.5, 1);
-        headlight.position.set(0, 1.2, -2.3);
-        headlight.target.position.set(0, 0, -20);
-        mototaxi.add(headlight);
-        mototaxi.add(headlight.target);
-
-        // Llantas (Función helper)
         function createWheel(x, y, z) {
             const wGroup = new THREE.Group();
-            // Neumático
-            const wGeo = new THREE.CylinderGeometry(0.6, 0.6, 0.4, 16);
-            wGeo.rotateZ(Math.PI / 2);
-            const wheel = new THREE.Mesh(wGeo, blackMat);
-            // Aro
-            const rimGeo = new THREE.CylinderGeometry(0.3, 0.3, 0.42, 16);
-            rimGeo.rotateZ(Math.PI / 2);
-            const rim = new THREE.Mesh(rimGeo, metalMat);
-            
+            const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 0.4, 16).rotateZ(Math.PI/2), blackMat);
+            const rim = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.42, 16).rotateZ(Math.PI/2), metalMat);
             wGroup.add(wheel);
             wGroup.add(rim);
             wGroup.position.set(x, y, z);
@@ -175,12 +155,66 @@
             return wGroup;
         }
 
-        mototaxi.add(createWheel(-1.7, 0.6, 2)); // Trasera Izquierda
-        mototaxi.add(createWheel(1.7, 0.6, 2));  // Trasera Derecha
-        mototaxi.add(createWheel(0, 0.6, -2));   // Delantera
+        placeholderGroup.add(createWheel(-1.7, 0.6, 2));
+        placeholderGroup.add(createWheel(1.7, 0.6, 2));
+        placeholderGroup.add(createWheel(0, 0.6, -2));
 
-        mototaxi.position.set(0, 0, 0);
-        scene.add(mototaxi);
+        mototaxi.add(placeholderGroup);
+
+        // --- FARO TRASERO Y DELANTERO PARA LA ESCENA ---
+        const headlight = new THREE.SpotLight(0xffffff, 1.5, 50, Math.PI/4, 0.5, 1);
+        headlight.position.set(0, 1.5, -2.3);
+        headlight.target.position.set(0, 0, -20);
+        mototaxi.add(headlight);
+        mototaxi.add(headlight.target);
+
+        // --- CARGAR EL MODELO COLLADA (DAE) DE 3D WAREHOUSE ---
+        if (typeof THREE.ColladaLoader !== 'undefined') {
+            const loader = new THREE.ColladaLoader();
+            loader.load('modelos/model.dae', function (collada) {
+                const dae = collada.scene;
+                
+                // Normalizar escala (Los modelos de SketchUp suelen ser GIGANTES o minúsculos)
+                const box = new THREE.Box3().setFromObject(dae);
+                const size = box.getSize(new THREE.Vector3());
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const targetSize = 6; // Tamaño deseado para que encaje en los carriles
+                const scale = targetSize / maxDim;
+                dae.scale.set(scale, scale, scale);
+                
+                // Centrar modelo y arreglar rotación si viene mal
+                const center = box.getCenter(new THREE.Vector3());
+                dae.position.x = -center.x * scale;
+                dae.position.y = (-box.min.y * scale); // Que toque el piso
+                dae.position.z = -center.z * scale;
+                
+                // Asegurarnos de que mire hacia -Z (A veces miran a X o Z positivo)
+                // Usualmente SketchUp orienta a X o Y. 
+                // Añadimos el dae a un wrapper para rotarlo si es necesario
+                const wrapper = new THREE.Group();
+                wrapper.add(dae);
+                // Si el modelo viene rotado mal, aquí podemos ajustarlo (wrapper.rotation.y = Math.PI;)
+                
+                // Habilitar sombras en todos los meshes del DAE
+                dae.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                    }
+                });
+
+                // Remover la mototaxi temporal y agregar la real
+                mototaxi.remove(placeholderGroup);
+                mototaxi.add(wrapper);
+                console.log("¡Modelo 3D cargado con éxito!");
+            }, 
+            function (xhr) {
+                console.log((xhr.loaded / xhr.total * 100) + '% cargado');
+            }, 
+            function (error) {
+                console.error("No se pudo cargar el modelo DAE. Se usará el temporal.", error);
+            });
+        }
     }
 
     function spawnObstacle(zPos) {
