@@ -681,6 +681,7 @@ window.restartGame = function() {
 
 // Lógica segura de guardado
 document.getElementById('btn-save-arcade').addEventListener('click', function() {
+    const btn = this;
     const nombre = document.getElementById("arcade-nombre").value.trim();
     if (!nombre) {
         alert("😅 Escribe tu nombre primero.");
@@ -688,6 +689,8 @@ document.getElementById('btn-save-arcade').addEventListener('click', function() 
     }
 
     if (typeof window.saveScoreToFirebase === 'function') {
+        btn.disabled = true;
+        btn.innerText = "GUARDANDO...";
         window.saveScoreToFirebase(nombre, score)
             .then(() => {
                 document.getElementById('arcade-game-over').classList.add('hidden');
@@ -696,11 +699,15 @@ document.getElementById('btn-save-arcade').addEventListener('click', function() 
                     window.mostrarPuntajes();
                 }
                 document.getElementById("arcade-nombre").value = "";
+                btn.disabled = false;
+                btn.innerHTML = "🕹️ GUARDAR PUNTAJE";
                 window.restartGame(); 
             })
             .catch((error) => {
                 console.error("❌ Error al guardar puntaje:", error);
                 alert("❌ Error al guardar el puntaje. Intenta de nuevo.");
+                btn.disabled = false;
+                btn.innerHTML = "🕹️ GUARDAR PUNTAJE";
             });
     }
 });
