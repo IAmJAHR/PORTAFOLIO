@@ -724,4 +724,10 @@ window.forzarGameOverArcade = function() {
     togglePause();
 }
 
+
+// Expose functions for mobile controls
+window.playerMove = playerMove;
+window.playerRotate = playerRotate;
+window.playerDrop = playerDrop;
+
 })();
