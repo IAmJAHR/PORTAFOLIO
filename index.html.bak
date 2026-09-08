@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Portfolio de Juan Abel Huaman Rafael - Desarrollador especializado en PHP, Node.js, JavaScript, C# y SAP Business One">
+    <meta name="author" content="Juan Abel Huaman Rafael">
+    <link rel="icon" type="image/png" href="image/icono.png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Orbitron:wght@400;700;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+    <link rel="stylesheet" href="css/index.css">
+
+    <title>Juan Abel - Desarrollador Full Stack</title>
+</head>
+
+<body onload="scrollTitle()">
+    <!-- Animated Background -->
+    <div class="animated-bg">
+        <div class="bg-shape shape-1"></div>
+        <div class="bg-shape shape-2"></div>
+        <div class="bg-shape shape-3"></div>
+    </div>
+
+    <!-- Encabezado Mejorado -->
+    <header class="header-modern">
+        <div class="container-header">
+            <div class="title-section">
+                <h1>Juan Abel Huaman Rafael</h1>
+                <p class="subtitle">👨‍💻 Desarrollador Full Stack | SAP B1 | Node.js | PHP</p>
+            </div>
+            <nav class="nav-modern">
+                <ul>
+                    <li><a href="#about">Sobre mí</a></li>
+                    <li><a href="#projects">Proyectos</a></li>
+                    <li><a href="#contact">Contacto</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Sección: Sobre mí -->
+        <section id="about" class="about-section" data-aos="fade-up">
+            <div class="card about-content glass-card">
+                <img src="image/imagen-logo.png" alt="Foto de perfil de Juan Abel" class="profile-pic">
+                <div class="about-text">
+                    <h2 class="section-title"><i class="fa-solid fa-code"></i> Sobre mí</h2>
+                    <p>
+                        ¡Hola! Soy <strong>Juan Abel</strong>, desarrollador full-stack especializado en crear
+                        <em>soluciones web modernas</em> y <em>sistemas empresariales robustos</em>.
+                        Domino <strong>Node.js</strong>, <strong>PHP</strong>, <strong>JavaScript</strong>, <strong>C#</strong> y
+                        <strong>SQL</strong>,
+                        con experiencia profunda en <strong>SAP Business One</strong> utilizando <code>DI-API</code>
+                        y bases de datos <strong>SAP HANA</strong>.
+                    </p>
+                    <p>
+                        Mi experiencia incluye el desarrollo de sistemas de gestión completos para
+                        <strong>almacenes</strong>, <strong>ventas</strong> y <strong>logística</strong> en el sector
+                        industrial.
+                        Transformo ideas en código eficiente, optimizo procesos y creo interfaces que los usuarios
+                        adoran.
+                        Siempre aprendiendo, siempre mejorando. 🚀
+                    </p>
+                    <div class="tech-stack">
+                        <h3>Mi Stack Tecnológico</h3>
+                        <div class="icons-container">
+                            <div class="tech-icon" data-aos="zoom-in" data-aos-delay="100">
+                                <i class="devicon-php-plain" title="PHP"></i>
+                                <span>PHP</span>
+                            </div>
+                            <div class="tech-icon" data-aos="zoom-in" data-aos-delay="200">
+                                <i class="devicon-javascript-plain" title="JavaScript"></i>
+                                <span>JavaScript</span>
+                            </div>
+                            <div class="tech-icon" data-aos="zoom-in" data-aos-delay="300">
+                                <i class="devicon-csharp-plain" title="C#"></i>
+                                <span>C#</span>
+                            </div>
+                            <div class="tech-icon" data-aos="zoom-in" data-aos-delay="400">
+                                <i class="devicon-mysql-plain-wordmark" title="SQL"></i>
+                                <span>MySQL</span>
+                            </div>
+                            <div class="tech-icon" data-aos="zoom-in" data-aos-delay="500">
+                                <i class="devicon-nodejs-plain" title="Node.js"></i>
+                                <span>Node.js</span>
+                            </div>
+                            <div class="tech-icon" data-aos="zoom-in" data-aos-delay="600">
+                                <i class="devicon-firebase-plain" title="Firebase"></i>
+                                <span>Firebase</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección: Proyectos -->
+        <section id="projects" class="projects" data-aos="fade-up">
+            <div class="container">
+                <h2 class="section-title"><i class="fa-solid fa-laptop-code"></i> Proyectos</h2>
+                <div class="projects-grid">
+                    <div class="card project-card glass-card" data-aos="zoom-in" data-aos-delay="100">
+                        <div class="project-image-wrapper">
+                            <!-- Use an image relevant to APIs or servers -->
+                            <img src="image/api_sunat_new.png" alt="API Tipo de Cambio y SUNAT">
+                            <div class="project-overlay">
+                                <span class="project-tag">⚙️ API REST & Scraping</span>
+                            </div>
+                        </div>
+                        <div class="project-content">
+                            <h3>🏦 API Tipo de Cambio & RUC SUNAT</h3>
+                            <p>API REST desarrollada en <strong>Node.js</strong> con <strong>Express</strong> y <strong>Puppeteer</strong> (Web Scraping). Permite obtener en tiempo real el tipo de cambio y consultar datos de RUC y DNI directamente desde portales peruanos. Alojado y estructurado con <strong>Firebase</strong> y <strong>Cheerio</strong>.</p>
+                            <a class="project-button" href="https://api-tipo-cambio-1.onrender.com/?#documentacion" target="_blank">
+                                <i class="fa-solid fa-book"></i> Ver Documentación
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="card project-card glass-card" data-aos="zoom-in" data-aos-delay="200">
+                        <div class="project-image-wrapper">
+                            <img src="image/logo-tetris.png" alt="Proyecto Tetris">
+                            <div class="project-overlay">
+                                <span class="project-tag">🎮 Gaming</span>
+                            </div>
+                        </div>
+                        <div class="project-content">
+                            <h3>🎮 Videojuego Tetris</h3>
+                            <p>Juego tipo arcade con ranking Firebase, pausa, predicción de pieza y diseño responsive.
+                                Interfaz moderna con efectos glassmorphism.</p>
+                            <a class="project-button" href="game.html" target="_blank">
+                                <i class="fa-solid fa-gamepad"></i> Jugar ahora
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="card project-card glass-card" data-aos="zoom-in" data-aos-delay="300">
+                        <div class="project-image-wrapper">
+                            <img src="image/icono_chat.png" alt="Chat">
+                            <div class="project-overlay">
+                                <span class="project-tag">💬 Web App</span>
+                            </div>
+                        </div>
+                        <div class="project-content">
+                            <h3>💬 Chat en Tiempo Real</h3>
+                            <p>Aplicación de mensajería instantánea desarrollada con Laravel, WebSockets (Pusher),
+                                Bootstrap 5 y
+                                autenticación con Laravel Breeze. Permite conversaciones en tiempo real entre usuarios
+                                autenticados.
+                            </p>
+                            <a class="project-button disabled" href="#">
+                                <i class="fa-solid fa-wrench"></i> En desarrollo
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección: Contacto -->
+        <section id="contact" class="contact-section" data-aos="fade-up">
+            <div class="card contact-container glass-card">
+                <h2 class="section-title"><i class="fa-solid fa-envelope-open-text"></i> Contacto</h2>
+                <p>¿Tienes un proyecto en mente o quieres colaborar? ¡Hablemos y hagamos algo increíble juntos!</p>
+
+                <div class="contact-links">
+                    <a href="mailto:jabelxd1@gmail.com" class="contact-button">
+                        <i class="fa-solid fa-paper-plane"></i> Enviar correo
+                    </a>
+                    <a href="https://www.linkedin.com/in/juan-abel-huaman-rafael-1987572b8/" target="_blank"
+                        class="contact-button linkedin">
+                        <i class="fa-brands fa-linkedin"></i> LinkedIn
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; <span id="current-year"></span> Juan Abel Huaman Rafael. Todos los derechos reservados.</p>
+            <p class="footer-subtitle">Hecho con <span class="heart">❤️</span> y mucho código</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="dist/js/source_index.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+        document.getElementById("current-year").textContent = new Date().getFullYear();
+    </script>
+</body>
+
+</html>
