@@ -3,9 +3,9 @@
 body {
     margin: 0;
     overflow: hidden; /* Evitar scroll en el canvas 3D */
-    background-color: #050505;
+    background-color: #d2b48c; /* Color arena/tierra */
     font-family: 'Rajdhani', sans-serif;
-    color: #00f3ff;
+    color: #333;
 }
 
 #game-container {
@@ -25,7 +25,7 @@ body {
     width: 100vw;
     height: 100vh;
     z-index: 10;
-    pointer-events: none; /* Dejar pasar los clicks al canvas si es necesario */
+    pointer-events: none;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -38,49 +38,50 @@ body {
 }
 
 .score-board {
-    background: rgba(10, 15, 25, 0.8);
-    border: 1px solid rgba(0, 243, 255, 0.5);
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid #a0522d;
     padding: 10px 30px;
-    border-radius: 5px;
-    box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .score-board h2 {
     margin: 0;
-    font-size: 2rem;
-    text-shadow: 0 0 10px #00f3ff;
+    font-size: 2.2rem;
+    color: #8b4513;
+    font-weight: 700;
 }
 
 .btn-back {
     pointer-events: auto;
-    background: rgba(188, 19, 254, 0.2);
-    border: 1px solid #bc13fe;
-    color: #bc13fe;
+    background: #a0522d;
+    border: none;
+    color: #fff;
     padding: 10px 20px;
     text-decoration: none;
     font-size: 1.2rem;
     font-weight: bold;
     border-radius: 5px;
     transition: 0.3s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
 }
 
 .btn-back:hover {
-    background: #bc13fe;
-    color: #fff;
-    box-shadow: 0 0 15px #bc13fe;
+    background: #8b4513;
+    transform: translateY(-2px);
 }
 
 /* GAME OVER SCREEN */
 #game-over-screen {
     position: absolute;
     top: 0; left: 0; width: 100vw; height: 100vh;
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(139, 69, 19, 0.85); /* Fondo sepia/marrón oscuro */
     z-index: 20;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    pointer-events: auto; /* Para poder clickear el botón de reinicio */
+    pointer-events: auto;
 }
 
 .hidden {
@@ -88,34 +89,37 @@ body {
 }
 
 #game-over-screen h1 {
-    font-size: 4rem;
-    color: #ff003c;
-    text-shadow: 0 0 20px #ff003c;
+    font-size: 4.5rem;
+    color: #ffdd00;
+    text-shadow: 2px 2px 0 #000;
     margin-bottom: 10px;
+    text-transform: uppercase;
 }
 
 #game-over-screen h2 {
     font-size: 2rem;
     color: #fff;
     margin-bottom: 40px;
+    text-shadow: 1px 1px 0 #000;
 }
 
 .btn-restart {
-    background: transparent;
-    border: 2px solid #00f3ff;
-    color: #00f3ff;
-    padding: 15px 40px;
-    font-size: 1.5rem;
+    background: #ffaa00;
+    border: none;
+    color: #000;
+    padding: 15px 50px;
+    font-size: 1.8rem;
     font-family: 'Rajdhani', sans-serif;
     font-weight: bold;
+    border-radius: 50px;
     cursor: pointer;
     transition: 0.3s;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
 }
 
 .btn-restart:hover {
-    background: #00f3ff;
-    color: #000;
-    box-shadow: 0 0 20px #00f3ff;
+    background: #ffcc00;
+    transform: scale(1.05);
 }
 
 /* CONTROLES MÓVILES */
@@ -134,20 +138,21 @@ body {
     pointer-events: auto;
     width: 80px;
     height: 80px;
-    background: rgba(0, 243, 255, 0.1);
-    border: 2px solid rgba(0, 243, 255, 0.5);
+    background: rgba(255, 255, 255, 0.5);
+    border: 3px solid #8b4513;
     border-radius: 50%;
-    color: #00f3ff;
+    color: #8b4513;
     font-size: 2rem;
     display: flex;
     justify-content: center;
     align-items: center;
     backdrop-filter: blur(5px);
     user-select: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
 .btn-mobile:active {
-    background: rgba(0, 243, 255, 0.4);
+    background: rgba(255, 255, 255, 0.8);
     transform: scale(0.9);
 }
 
