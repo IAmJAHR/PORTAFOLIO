@@ -11,31 +11,30 @@ app.use(cors());
 app.use(express.json());
 
 // --- CONFIGURACIÓN DE POSTGRESQL ---
-let pool = null;
-let isDbConnected = false;
-
 const dbUrl = process.env.DATABASE_URL || 
   (process.env.POSTGRES_HOST ? 
-    `postgres://${process.env.POSTGRES_USER || 'postgres'}:${process.env.POSTGRES_PASSWORD || ''}@${process.env.POSTGRES_HOST}:${process.env.POSTGRES_PORT || 5432}/${process.env.POSTGRES_DB || 'portafolio'}` 
+    `postgres://${process.env.POSTGRES_USER || 'postgres'}:${process.env.POSTGRES_PASSWORD || ''}@${process.env.POSTGRES_HOST}:${process.env.POSTGRES_PORT || 5432}/${process.env.POSTGRES_DB || 'postgres'}` 
     : 'postgresql://postgres:hrknf15asjmljhrz@portafolioabel-postgresdb-itf04m:5432/postgres');
 
-if (dbUrl) {
-  pool = new Pool({
-    connectionString: dbUrl,
-    ssl: process.env.NODE_ENV === 'production' && !dbUrl.includes('dokploy') && !dbUrl.includes('localhost') ? { rejectUnauthorized: false } : false
-  });
+// Solo usar SSL si el proveedor remoto lo requiere (Dokploy interno NO usa SSL)
+const needsSsl = dbUrl.includes('sslmode=require') || 
+                 dbUrl.includes('supabase.co') || 
+                 dbUrl.includes('neon.tech') || 
+                 dbUrl.includes('render.com');
 
-  // Inicializar tabla en PostgreSQL
-  initDatabase();
-} else {
-  console.log('ℹ️ No se detectó DATABASE_URL. Usando almacenamiento local fallback.');
-}
+const pool = new Pool({
+  connectionString: dbUrl,
+  ssl: needsSsl ? { rejectUnauthorized: false } : false,
+  connectionTimeoutMillis: 5000,
+  idleTimeoutMillis: 30000
+});
 
-async function initDatabase() {
-  if (!pool) return;
+// Inicialización resiliente de la tabla
+let tableReady = false;
+async function ensureTable() {
+  if (tableReady) return true;
   try {
-    const client = await pool.connect();
-    await client.query(`
+    await pool.query(`
       CREATE TABLE IF NOT EXISTS scores (
         id SERIAL PRIMARY KEY,
         usuario VARCHAR(60) NOT NULL,
@@ -45,17 +44,22 @@ async function initDatabase() {
       );
       CREATE INDEX IF NOT EXISTS idx_scores_game_puntaje ON scores(game, puntaje DESC);
     `);
-    client.release();
-    isDbConnected = true;
-    console.log('✅ PostgreSQL conectado e inicializado con éxito.');
+    tableReady = true;
+    console.log('✅ PostgreSQL: Tabla scores verificada y lista.');
+    return true;
   } catch (err) {
-    console.error('⚠️ Error al conectar a PostgreSQL:', err.message);
-    isDbConnected = false;
+    console.error('⚠️ PostgreSQL ensureTable falló:', err.message);
+    tableReady = false;
+    return false;
   }
 }
 
-// Fallback local en archivo JSON por si la DB no está disponible
+// Intentar inicializar de inmediato al arrancar
+ensureTable();
+
+// --- ALMACENAMIENTO FALLBACK EN CASO DE EMERGENCIA ---
 const FALLBACK_FILE = path.join(__dirname, 'scores_fallback.json');
+
 function readFallbackScores(game = 'tetris') {
   try {
     if (!fs.existsSync(FALLBACK_FILE)) return [];
@@ -85,22 +89,19 @@ function saveFallbackScore(usuario, puntaje, game = 'tetris') {
 // 1. Obtener Top 10 Puntajes
 app.get('/api/scores', async (req, res) => {
   const game = (req.query.game || 'tetris').toLowerCase();
-  
-  if (isDbConnected && pool) {
-    try {
-      const result = await pool.query(
-        'SELECT id, usuario, puntaje, created_at FROM scores WHERE game = $1 ORDER BY puntaje DESC LIMIT 10',
-        [game]
-      );
-      return res.json({ success: true, source: 'postgres', scores: result.rows });
-    } catch (err) {
-      console.error('Error al consultar Postgres:', err.message);
-    }
-  }
 
-  // Fallback si la DB está cargando
-  const scores = readFallbackScores(game);
-  res.json({ success: true, source: 'local', scores });
+  try {
+    await ensureTable();
+    const result = await pool.query(
+      'SELECT id, usuario, puntaje, created_at FROM scores WHERE game = $1 ORDER BY puntaje DESC LIMIT 10',
+      [game]
+    );
+    return res.json({ success: true, source: 'postgres', scores: result.rows });
+  } catch (err) {
+    console.error('⚠️ Error al consultar Postgres, usando fallback:', err.message);
+    const scores = readFallbackScores(game);
+    return res.json({ success: true, source: 'fallback', scores, error: err.message });
+  }
 });
 
 // 2. Guardar Puntaje
@@ -115,34 +116,56 @@ app.post('/api/scores', async (req, res) => {
   const cleanName = String(usuario).trim().substring(0, 40) || 'Anónimo';
   const cleanScore = parseInt(puntaje, 10) || 0;
 
-  if (isDbConnected && pool) {
-    try {
-      const result = await pool.query(
-        'INSERT INTO scores (usuario, puntaje, game) VALUES ($1, $2, $3) RETURNING *',
-        [cleanName, cleanScore, gameType]
-      );
-      return res.json({ success: true, source: 'postgres', record: result.rows[0] });
-    } catch (err) {
-      console.error('Error al insertar en Postgres:', err.message);
-    }
+  try {
+    await ensureTable();
+    const result = await pool.query(
+      'INSERT INTO scores (usuario, puntaje, game) VALUES ($1, $2, $3) RETURNING *',
+      [cleanName, cleanScore, gameType]
+    );
+    console.log(`✅ Récord guardado en PostgreSQL: ${cleanName} - ${cleanScore} pts (${gameType})`);
+    return res.json({ success: true, source: 'postgres', record: result.rows[0] });
+  } catch (err) {
+    console.error('⚠️ Error al guardar en Postgres, usando fallback:', err.message);
+    saveFallbackScore(cleanName, cleanScore, gameType);
+    return res.json({
+      success: true,
+      source: 'fallback',
+      record: { usuario: cleanName, puntaje: cleanScore },
+      dbError: err.message
+    });
   }
-
-  // Fallback local
-  saveFallbackScore(cleanName, cleanScore, gameType);
-  res.json({ success: true, source: 'local', record: { usuario: cleanName, puntaje: cleanScore } });
 });
 
-// 3. Health Check
-app.get('/api/health', (req, res) => {
+// 3. Health Check detallado
+app.get('/api/health', async (req, res) => {
+  let dbStatus = 'disconnected';
+  let dbError = null;
+  let totalScores = 0;
+
+  try {
+    const ok = await ensureTable();
+    if (ok) {
+      const countRes = await pool.query('SELECT COUNT(*) FROM scores');
+      totalScores = parseInt(countRes.rows[0].count, 10);
+      dbStatus = 'connected';
+    }
+  } catch (e) {
+    dbError = e.message;
+  }
+
   res.json({
     status: 'ok',
-    database: isDbConnected ? 'PostgreSQL Conectado' : 'Modo Fallback / Desconectado',
+    database: {
+      status: dbStatus,
+      totalScores,
+      error: dbError,
+      url: dbUrl.replace(/:[^:@]+@/, ':***@')
+    },
     timestamp: new Date().toISOString()
   });
 });
 
 // --- SERVICIO DE ARCHIVOS ESTÁTICOS ---
-// Configurar MIME types personalizados para Three.js y fuentes
 express.static.mime.define({
   'application/xml': ['dae'],
   'model/gltf-binary': ['glb'],
@@ -150,15 +173,14 @@ express.static.mime.define({
 });
 
 app.use(express.static(path.join(__dirname), {
-  maxAge: '7d',
+  maxAge: '1h',
   setHeaders: (res, pathStr) => {
-    if (pathStr.endsWith('.html')) {
-      res.setHeader('Cache-Control', 'no-cache');
+    if (pathStr.endsWith('.html') || pathStr.endsWith('.js') || pathStr.endsWith('.css')) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     }
   }
 }));
 
-// Fallback a index.html para cualquier ruta no encontrada
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });

@@ -26,7 +26,7 @@
                 saveBtn.innerText = 'GUARDANDO...';
 
                 try {
-                    const finalScore = window.gameFacade.state.score;
+                    const finalScore = parseInt(document.getElementById('arcade-score')?.innerText) || (window.gameFacade ? window.gameFacade.state.score : 0);
                     if (typeof window.saveScoreToFirebase === 'function') {
                         await window.saveScoreToFirebase(nombre, finalScore, 'tetris');
                     }
