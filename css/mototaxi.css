@@ -1,11 +1,13 @@
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Rajdhani:wght@600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Rajdhani:wght@600;700;800&display=swap');
 
 body {
     margin: 0;
-    overflow: hidden; /* Evitar scroll en el canvas 3D */
-    background-color: #d2b48c; /* Color arena/tierra */
+    overflow: hidden;
+    background-color: #d8b589;
     font-family: 'Rajdhani', sans-serif;
     color: #333;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 #game-container {
@@ -34,130 +36,344 @@ body {
 .hud-top {
     display: flex;
     justify-content: space-between;
-    padding: 20px 40px;
+    align-items: center;
+    padding: 20px 30px;
 }
 
-.score-board {
-    background: rgba(255, 255, 255, 0.9);
-    border: 2px solid #a0522d;
-    padding: 10px 30px;
-    border-radius: 8px;
+.hud-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.hud-location {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #ffea00;
+    background: rgba(15, 20, 30, 0.85);
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 234, 0, 0.4);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: 0.5px;
 }
 
-.score-board h2 {
-    margin: 0;
-    font-size: 2.2rem;
-    color: #8b4513;
+/* SCORE BOARD ESTILO PERUANO */
+.score-board {
+    background: rgba(20, 24, 34, 0.88);
+    border: 2px solid #ffcc00;
+    padding: 8px 20px;
+    border-radius: 10px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 204, 0, 0.2);
+    backdrop-filter: blur(8px);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.score-main {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.score-label {
+    font-size: 0.9rem;
+    font-family: 'Fira Code', monospace;
+    color: #ffcc00;
     font-weight: 700;
 }
 
-.btn-back {
+.score-val {
+    font-size: 2.2rem;
+    color: #ffffff;
+    font-weight: 800;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    line-height: 1;
+}
+
+.score-sub {
+    display: flex;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+.stat-badge {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.badge-soles {
+    background: rgba(255, 204, 0, 0.2);
+    color: #ffdd44;
+    border: 1px solid rgba(255, 204, 0, 0.4);
+}
+
+.badge-speed {
+    background: rgba(0, 243, 255, 0.15);
+    color: #00f3ff;
+    border: 1px solid rgba(0, 243, 255, 0.3);
+}
+
+/* BOTONES DE HUD */
+.btn-back, .btn-sound {
     pointer-events: auto;
-    background: #a0522d;
-    border: none;
+    background: #c92a2a;
+    border: 2px solid #ff6b6b;
     color: #fff;
-    padding: 10px 20px;
+    padding: 8px 18px;
     text-decoration: none;
-    font-size: 1.2rem;
-    font-weight: bold;
-    border-radius: 5px;
-    transition: 0.3s;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    border-radius: 6px;
+    transition: 0.2s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-sound {
+    background: #1971c2;
+    border-color: #4dabf7;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 50%;
 }
 
 .btn-back:hover {
-    background: #8b4513;
+    background: #e03131;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(201, 42, 42, 0.4);
+}
+
+.btn-sound:hover {
+    background: #228be6;
     transform: translateY(-2px);
 }
 
-/* GAME OVER SCREEN */
+.btn-sound.muted {
+    background: #495057;
+    border-color: #868e96;
+    color: #ced4da;
+}
+
+/* DESKTOP HINTS */
+.desktop-hints {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15, 18, 26, 0.85);
+    color: #fff;
+    padding: 8px 24px;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(255, 204, 0, 0.35);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    backdrop-filter: blur(6px);
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.desktop-hints i {
+    color: #ffcc00;
+    margin-right: 6px;
+}
+
+/* GAME OVER SCREEN CRIOLLO */
 #game-over-screen {
     position: absolute;
     top: 0; left: 0; width: 100vw; height: 100vh;
-    background: rgba(139, 69, 19, 0.85); /* Fondo sepia/marrón oscuro */
+    background: rgba(12, 16, 26, 0.94);
     z-index: 20;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     pointer-events: auto;
+    backdrop-filter: blur(8px);
 }
 
 .hidden {
     display: none !important;
 }
 
-#game-over-screen h1 {
-    font-size: 4.5rem;
-    color: #ffdd00;
-    text-shadow: 2px 2px 0 #000;
-    margin-bottom: 10px;
-    text-transform: uppercase;
+.game-over-box {
+    background: rgba(22, 28, 42, 0.9);
+    border: 2px solid #ff4444;
+    padding: 40px 50px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.7), 0 0 25px rgba(255, 68, 68, 0.3);
+    max-width: 520px;
+    width: 90%;
 }
 
-#game-over-screen h2 {
-    font-size: 2rem;
+.crash-icon {
+    font-size: 3.5rem;
+    color: #ff4444;
+    margin-bottom: 10px;
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: rotate(0); }
+    20% { transform: rotate(-10deg); }
+    40% { transform: rotate(10deg); }
+    60% { transform: rotate(-6deg); }
+    80% { transform: rotate(6deg); }
+}
+
+.game-over-box h1 {
+    font-size: 3.2rem;
+    color: #ff4444;
+    text-shadow: 0 0 15px rgba(255, 68, 68, 0.4);
+    margin: 0 0 4px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.game-over-box h2 {
+    font-size: 1.5rem;
+    color: #e2e8f0;
+    margin: 0 0 25px;
+    font-weight: 600;
+}
+
+.game-over-stats {
+    background: rgba(10, 14, 22, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 16px 24px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.15rem;
+    font-family: 'Fira Code', monospace;
+    color: #94a3b8;
+}
+
+.stat-row strong {
     color: #fff;
-    margin-bottom: 40px;
-    text-shadow: 1px 1px 0 #000;
+    font-size: 1.3rem;
 }
 
 .btn-restart {
-    background: #ffaa00;
+    background: #ffcc00;
     border: none;
-    color: #000;
-    padding: 15px 50px;
-    font-size: 1.8rem;
+    color: #0b0f19;
+    padding: 15px 36px;
+    font-size: 1.45rem;
     font-family: 'Rajdhani', sans-serif;
-    font-weight: bold;
+    font-weight: 800;
+    letter-spacing: 1px;
     border-radius: 50px;
     cursor: pointer;
-    transition: 0.3s;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+    transition: 0.2s;
+    box-shadow: 0 6px 20px rgba(255, 204, 0, 0.4);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
 }
 
 .btn-restart:hover {
-    background: #ffcc00;
-    transform: scale(1.05);
+    background: #ffe066;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 204, 0, 0.6);
 }
 
 /* CONTROLES MÓVILES */
 .mobile-controls {
     position: absolute;
-    bottom: 30px;
+    bottom: 25px;
     width: 100%;
     display: flex;
     justify-content: space-between;
-    padding: 0 40px;
+    align-items: center;
+    padding: 0 25px;
     box-sizing: border-box;
     pointer-events: none;
 }
 
 .btn-mobile {
     pointer-events: auto;
-    width: 80px;
-    height: 80px;
-    background: rgba(255, 255, 255, 0.5);
-    border: 3px solid #8b4513;
+    width: 78px;
+    height: 78px;
+    background: rgba(255, 255, 255, 0.75);
+    border: 3px solid #ffcc00;
     border-radius: 50%;
-    color: #8b4513;
+    color: #1a1a1a;
     font-size: 2rem;
     display: flex;
     justify-content: center;
     align-items: center;
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(8px);
     user-select: none;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+    transition: transform 0.1s, background 0.1s;
+}
+
+.btn-mobile.btn-horn {
+    width: 70px;
+    height: 70px;
+    background: #ffcc00;
+    border-color: #fff;
+    color: #000;
+    font-size: 1.8rem;
+    box-shadow: 0 6px 20px rgba(255, 204, 0, 0.5);
 }
 
 .btn-mobile:active {
-    background: rgba(255, 255, 255, 0.8);
-    transform: scale(0.9);
+    background: #ffffff;
+    transform: scale(0.92);
 }
 
 @media (min-width: 769px) {
     .mobile-controls {
         display: none !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .desktop-hints {
+        display: none;
+    }
+    .hud-top {
+        padding: 12px 16px;
+    }
+    .score-board {
+        padding: 6px 14px;
+    }
+    .score-val {
+        font-size: 1.7rem;
+    }
+    .game-over-box {
+        padding: 25px 20px;
+    }
+    .game-over-box h1 {
+        font-size: 2.3rem;
     }
 }

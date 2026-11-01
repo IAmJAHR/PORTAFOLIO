@@ -3,8 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mototaxi 3D Simulator</title>
-    <!-- Icons -->
+    <title>🛺 Mototaxi 3D - Tumán, Lambayeque (Av. Micaela Bastidas)</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="image/icono.png">
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700;800&family=Fira+Code:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- CSS -->
     <link rel="stylesheet" href="css/mototaxi.css">
@@ -17,32 +22,68 @@
     <!-- UI Overlay -->
     <div id="ui-layer">
         <div class="hud-top">
-            <a href="index.html" class="btn-back"><i class="fas fa-arrow-left"></i> SALIR</a>
-            <div class="score-board">
-                <h2>SCORE: <span id="score-display">0</span></h2>
+            <div class="hud-left">
+                <a href="index.html" class="btn-back"><i class="fas fa-arrow-left"></i> SALIR</a>
+                <button id="btn-sound-toggle" class="btn-sound" title="Sonido On/Off" aria-label="Sonido"><i class="fas fa-volume-up"></i></button>
+                <div class="hud-location">
+                    <i class="fas fa-map-marker-alt"></i> TUMÁN &bull; AV. MICAELA BASTIDAS
+                </div>
             </div>
+
+            <!-- Panel de Puntuación Estilo Peruano -->
+            <div class="score-board">
+                <div class="score-main">
+                    <span class="score-label">SCORE</span>
+                    <span id="score-display" class="score-val">0</span>
+                </div>
+                <div class="score-sub">
+                    <span class="stat-badge badge-soles"><i class="fas fa-coins"></i> S/. <span id="coins-display">0</span></span>
+                    <span class="stat-badge badge-speed"><i class="fas fa-tachometer-alt"></i> <span id="speed-display">35</span> km/h</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Indicador de Teclado PC -->
+        <div class="desktop-hints">
+            <span><i class="fas fa-keyboard"></i> [A/D] o [← / →] Conducir &bull; <strong style="color: #ffea00;">[H] o [ESPACIO] Tocar Claxon</strong></span>
         </div>
 
         <!-- Controles móviles (ocultos en PC por CSS) -->
         <div class="mobile-controls">
             <div class="btn-mobile" id="btn-left"><i class="fas fa-arrow-left"></i></div>
+            <div class="btn-mobile btn-horn" id="btn-horn" title="Tocar Claxon"><i class="fas fa-bullhorn"></i></div>
             <div class="btn-mobile" id="btn-right"><i class="fas fa-arrow-right"></i></div>
         </div>
     </div>
 
-    <!-- Pantalla de Game Over -->
+    <!-- Pantalla de Game Over Criolla / Peruana -->
     <div id="game-over-screen" class="hidden">
-        <h1>SYSTEM FAILURE</h1>
-        <h2>HAS CHOCADO</h2>
-        <h2 style="color: #00f3ff; margin-top: -20px; font-size: 1.5rem;">SCORE FINAL: <span id="final-score">0</span></h2>
-        <button id="btn-restart" class="btn-restart"><i class="fas fa-redo"></i> REINICIAR</button>
+        <div class="game-over-box">
+            <div class="crash-icon"><i class="fas fa-car-burst"></i></div>
+            <h1>¡CHOQUE TOTAL!</h1>
+            <h2>EL TORITO QUEDÓ EN EL TALLER 🛠️</h2>
+            <div class="game-over-stats">
+                <div class="stat-row">
+                    <span>SCORE FINAL:</span>
+                    <strong id="final-score">0</strong>
+                </div>
+                <div class="stat-row">
+                    <span>GANANCIAS DEL DÍA:</span>
+                    <strong style="color: #ffea00;">S/. <span id="final-coins">0</span></strong>
+                </div>
+            </div>
+            <button id="btn-restart" class="btn-restart">
+                <i class="fas fa-redo"></i> SALIR A RUTEAR DE NUEVO
+            </button>
+        </div>
     </div>
 
-    <!-- Three.js Librería Base -->
+    <!-- Three.js Librería Base y Loaders -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/ColladaLoader.js"></script>
     
-    <!-- Lógica del Juego -->
+    <!-- Lógica del Juego: Tumán, Lambayeque & Mototaxi Torito Real -->
     <script src="dist/js/mototaxi_game.js"></script>
 
 </body>
