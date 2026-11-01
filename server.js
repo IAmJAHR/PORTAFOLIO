@@ -17,7 +17,7 @@ let isDbConnected = false;
 const dbUrl = process.env.DATABASE_URL || 
   (process.env.POSTGRES_HOST ? 
     `postgres://${process.env.POSTGRES_USER || 'postgres'}:${process.env.POSTGRES_PASSWORD || ''}@${process.env.POSTGRES_HOST}:${process.env.POSTGRES_PORT || 5432}/${process.env.POSTGRES_DB || 'portafolio'}` 
-    : null);
+    : 'postgresql://postgres:hrknf15asjmljhrz@portafolioabel-postgresdb-itf04m:5432/postgres');
 
 if (dbUrl) {
   pool = new Pool({
