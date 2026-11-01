@@ -476,151 +476,6 @@ function update(time = 0) {
     draw(); 
     requestAnimationFrame(update); 
 }
-function increaseLevel() {
-    level++;
-    dropInterval *= 0.9; // Hace que las piezas caigan más rápido
-    document.getElementById('level').innerText = "LEVEL: " + level;
-}
-
-
-const piecesTypes = 'ILJOTSZ';  // Representa los tipos de piezas disponibles
-
-function randomPiece() {
-    const randomIndex = Math.floor(Math.random() * piecesTypes.length);
-    const type = piecesTypes[randomIndex];
-    const matrix = createPiece(type);
-    return { matrix, type }; // ✅ Devuelve objeto con .matrix
-}
-
-
-function playerReset() {
-    // ✅ Toma la primera pieza de la cola
-    const piece = nextPieces.shift();
-    player.matrix = piece.matrix;
-    player.type = piece.type;
-
-    // ✅ Mete una nueva pieza al final de la cola
-    nextPieces.push(randomPiece());
-
-    // ✅ Posiciona la nueva pieza arriba y centrada
-    player.pos.y = 0;
-    player.pos.x = (width / 2 | 0) - (player.matrix[0].length / 2 | 0);
-
-    // ✅ Actualiza el display
-    updateNextDisplay();
-
-    // 🛑 Verifica si ya hay colisión
-    if (collide(arena, player)) {
-        // alert("¡Juego terminado! Presiona reiniciar para jugar de nuevo.");
-        isPaused = true;
-        clearInterval(timerInterval);
-        clearInterval(levelInterval);
-
-        const score = parseInt(document.getElementById("score").innerText);
-        mostrarGameOverArcade(score);
-
-        return true;
-    }
-
-    return false;
-}
-
-// document.addEventListener('DOMContentLoaded', function () {
-//     update(); // Asegura que update se llama después de que el DOM esté completamente cargado
-// });
-function drawGrid() {
-    context.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-    context.lineWidth = 1;
-
-    for (let x = 0; x <= width; x++) {
-        context.beginPath();
-        context.moveTo(x * scale, 0);
-        context.lineTo(x * scale, canvas.height);
-        context.stroke();
-    }
-
-    for (let y = 0; y <= height; y++) {
-        context.beginPath();
-        context.moveTo(0, y * scale);
-        context.lineTo(canvas.width, y * scale);
-        context.stroke();
-    }
-}
-
-// Variables para almacenar las próximas piezas
-const nextPieces = [];
-
-function initNextPieces() {
-    // Inicializa con dos piezas aleatorias
-    nextPieces.push(randomPiece());
-    nextPieces.push(randomPiece());
-    updateNextDisplay();
-    // console.log("Siguiente pieza:", nextPieces[0]);
-}
-
-function updateNextDisplay() {
-    const nextPieceDisplay = document.getElementById('next-display');
-    nextPieceDisplay.innerHTML = ''; 
-
-    if (nextPieces.length > 0) {
-        const nextPiece = nextPieces[0].matrix; 
-        const blockSize = 18;
-
-        nextPiece.forEach((row, y) => {
-            row.forEach((value, x) => {
-                if (value !== 0) {
-                    const block = document.createElement('div');
-                    block.style.position = 'absolute';
-                    block.style.width = `${blockSize}px`;
-                    block.style.height = `${blockSize}px`;
-                    block.style.left = `${x * blockSize}px`;
-                    block.style.top = `${y * blockSize}px`;
-                    block.style.backgroundColor = determineColor(value);
-                    block.style.borderTop = '3px solid rgba(255,255,255,0.3)';
-                    block.style.borderLeft = '3px solid rgba(255,255,255,0.3)';
-                    block.style.borderBottom = '3px solid rgba(0,0,0,0.4)';
-                    block.style.borderRight = '3px solid rgba(0,0,0,0.4)';
-                    block.style.boxSizing = 'border-box';
-                    nextPieceDisplay.appendChild(block);
-                }
-            });
-        });
-    } else {
-        console.warn("No hay piezas en la cola.");
-    }
-}
-
-
-
-
-// let startTime = Date.now();
-// let timerInterval = setInterval(updateTime, 1000);
-
-function updateTime() {
-    let elapsedTime = Date.now() - startTime;
-    let seconds = Math.floor((elapsedTime / 1000) % 60);
-    let minutes = Math.floor((elapsedTime / (1000 * 60)) % 60);
-    document.getElementById('time').innerText = `TIME: ${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
-}
-
-
-function update(time = 0) {
-    if (isPaused) return; 
-
-    const deltaTime = time - lastTime;
-    lastTime = time;
-
-    if (!isClearing) {
-        dropCounter += deltaTime;
-        if (dropCounter > dropInterval) {
-            playerDrop();
-            dropCounter = 0;
-        }
-    }
-
-    draw(); 
-    requestAnimationFrame(update); 
-}
 
 window.restartGame = function() {
     const scoreElement = document.getElementById('score');
@@ -681,7 +536,6 @@ window.restartGame = function() {
 
 // Lógica segura de guardado
 document.getElementById('btn-save-arcade').addEventListener('click', function() {
-    const btn = this;
     const nombre = document.getElementById("arcade-nombre").value.trim();
     if (!nombre) {
         alert("😅 Escribe tu nombre primero.");
@@ -689,8 +543,6 @@ document.getElementById('btn-save-arcade').addEventListener('click', function() 
     }
 
     if (typeof window.saveScoreToFirebase === 'function') {
-        btn.disabled = true;
-        btn.innerText = "GUARDANDO...";
         window.saveScoreToFirebase(nombre, score)
             .then(() => {
                 document.getElementById('arcade-game-over').classList.add('hidden');
@@ -699,15 +551,11 @@ document.getElementById('btn-save-arcade').addEventListener('click', function() 
                     window.mostrarPuntajes();
                 }
                 document.getElementById("arcade-nombre").value = "";
-                btn.disabled = false;
-                btn.innerHTML = "🕹️ GUARDAR PUNTAJE";
                 window.restartGame(); 
             })
             .catch((error) => {
                 console.error("❌ Error al guardar puntaje:", error);
                 alert("❌ Error al guardar el puntaje. Intenta de nuevo.");
-                btn.disabled = false;
-                btn.innerHTML = "🕹️ GUARDAR PUNTAJE";
             });
     }
 });
@@ -723,11 +571,5 @@ window.forzarGameOverArcade = function() {
     mostrarGameOverArcade(score);
     togglePause();
 }
-
-
-// Expose functions for mobile controls
-window.playerMove = playerMove;
-window.playerRotate = playerRotate;
-window.playerDrop = playerDrop;
 
 })();
