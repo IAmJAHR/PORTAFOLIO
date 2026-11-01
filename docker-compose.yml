@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  portafolio:
+    build: .
+    container_name: portafolio_abel
+    restart: unless-stopped
+    ports:
+      # Puedes cambiar "80:80" si ya tienes otro servicio usando el puerto 80 (ej. "8080:80" o "3000:80")
+      - "80:80"
+    environment:
+      - NODE_ENV=production

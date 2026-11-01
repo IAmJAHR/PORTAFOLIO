@@ -1,0 +1,7 @@
+.git
+.gitignore
+*.bak
+*.log
+node_modules
+.gemini
+inspect_dae.js
