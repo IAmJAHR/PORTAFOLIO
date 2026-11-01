@@ -1,31 +1,31 @@
 # =========================================================================
-# Dockerfile para Portafolio Web - Juan Abel Huaman
-# Servidor web ultra-ligero de alto rendimiento con Nginx Alpine
+# Dockerfile para Portafolio Web & API de Base de Datos - Juan Abel Huaman
+# Node.js 20 Alpine + Express + PostgreSQL Client (pg)
 # =========================================================================
 
-FROM nginx:alpine
+FROM node:20-alpine
 
-# Metadata
-LABEL maintainer="Juan Abel Huaman <juandavidhr11@gmail.com>"
-LABEL description="Portafolio Web y Simulador Mototaxi 3D"
+WORKDIR /app
 
-# Eliminar configuración por defecto de Nginx
-RUN rm -rf /etc/nginx/conf.d/* /usr/share/nginx/html/*
+# Copiar e instalar dependencias de producción
+COPY package.json ./
+RUN npm install --production
 
-# Copiar configuración personalizada optimizada con MIME types y Gzip
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Copiar todos los archivos web al directorio de Nginx
-COPY index.html /usr/share/nginx/html/
-COPY game.html /usr/share/nginx/html/
-COPY mototaxi.html /usr/share/nginx/html/
-COPY css/ /usr/share/nginx/html/css/
-COPY dist/ /usr/share/nginx/html/dist/
-COPY image/ /usr/share/nginx/html/image/
-COPY modelos/ /usr/share/nginx/html/modelos/
+# Copiar todo el código y assets estáticos
+COPY server.js ./
+COPY index.html ./
+COPY game.html ./
+COPY mototaxi.html ./
+COPY css/ ./css/
+COPY dist/ ./dist/
+COPY image/ ./image/
+COPY modelos/ ./modelos/
 
 # Puerto estándar HTTP
 EXPOSE 80
 
-# Iniciar servidor Nginx en primer plano
-CMD ["nginx", "-g", "daemon off;"]
+ENV NODE_ENV=production
+ENV PORT=80
+
+# Iniciar servidor Node.js
+CMD ["node", "server.js"]

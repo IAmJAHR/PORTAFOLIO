@@ -1,0 +1,14 @@
+{
+  "name": "portafolio-juan-abel",
+  "version": "1.0.0",
+  "description": "Portafolio Web, Tetris Arcade y Simulador Mototaxi 3D con PostgreSQL",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "pg": "^8.11.5"
+  }
+}
