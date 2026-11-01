@@ -1,12 +1,17 @@
-// Funciones para interactuar con Supabase
+// Funciones para interactuar con Supabase (<70 líneas)
 
 async function guardarPuntajeArcade() {
     const nombre = document.getElementById("arcade-nombre").value.trim();
     const comentario = document.getElementById("arcade-comentario").value.trim();
     const score = parseInt(document.getElementById("arcade-score").innerText);
+    const toast = window.CyberToast || {
+        warning: console.warn,
+        success: console.log,
+        error: console.error
+    };
 
     if (!nombre) {
-        alert("😅 Escribe tu nombre primero.");
+        toast.warning("😅 Escribe tu nombre primero.");
         return;
     }
 
@@ -24,7 +29,7 @@ async function guardarPuntajeArcade() {
         if (error) throw error;
 
         document.getElementById('arcade-game-over').classList.add('hidden');
-        alert("✅ Puntaje guardado con estilo arcade.");
+        toast.success("✅ Puntaje guardado con estilo arcade.");
         mostrarPuntajes(); // Actualizar la tabla
 
         // Limpiar campos
@@ -32,7 +37,7 @@ async function guardarPuntajeArcade() {
         document.getElementById("arcade-comentario").value = "";
     } catch (error) {
         console.error("❌ Error al guardar puntaje:", error);
-        alert("❌ Error al guardar el puntaje. Intenta de nuevo.");
+        toast.error("❌ Error al guardar el puntaje. Intenta de nuevo.");
     }
 }
 
@@ -49,21 +54,16 @@ async function mostrarPuntajes() {
 
         if (error) throw error;
 
-        data.forEach((record, index) => {
-            const fila = document.createElement("tr");
-            fila.innerHTML = `
+        data.forEach((fila, index) => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
                 <td>${index + 1}</td>
-                <td>${record.usuario}</td>
-                <td>${record.puntaje}</td>
+                <td>${fila.usuario}</td>
+                <td>${fila.puntaje}</td>
             `;
-            // Agregar título con el comentario si existe
-            if (record.comentario) {
-                fila.title = `Comentario: ${record.comentario}`;
-                fila.style.cursor = 'help';
-            }
-            tbody.appendChild(fila);
+            tbody.appendChild(tr);
         });
     } catch (error) {
-        console.error("❌ Error al mostrar puntajes:", error);
+        console.error("❌ Error al obtener puntajes:", error);
     }
 }

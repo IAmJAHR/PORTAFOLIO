@@ -1,141 +1,67 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Juega Tetris clásico con diseño moderno. Compite por el mejor puntaje y guarda tus records.">
-    <meta name="author" content="Juan Abel (Jabel Dev)">
-    <title>🎮 Tetris Premium - Hecho por Juan Abel</title>
-
-    <!-- Google Fonts -->
+    <title>🎮 Tetris Premium - Juan Abel</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&display=swap"
-        rel="stylesheet">
-
-    <!-- Font Awesome for icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <!-- Styles -->
     <link rel="stylesheet" href="css/game.css">
 </head>
-
 <body class="tetris-body">
-    <!-- Animated Background -->
-    <div class="animated-bg">
-        <div class="bg-shape shape-1"></div>
-        <div class="bg-shape shape-2"></div>
-        <div class="bg-shape shape-3"></div>
-    </div>
-
-    <!-- 📦 CONTENEDOR PRINCIPAL -->
+    <div class="animated-bg"><div class="bg-shape shape-1"></div><div class="bg-shape shape-2"></div><div class="bg-shape shape-3"></div></div>
     <div id="main-layout">
-
-        <!-- 🕹️ Panel de Controles -->
+        <!-- 🕹️ Panel Controles -->
         <div id="controls-column" class="glass-panel">
-            <div class="panel-header">
-                <h2>🎮 CONTROLES</h2>
-            </div>
-
-            <div id="next-piece" class="info-box">
-                <div id="next-label">SIGUIENTE</div>
-                <div id="next-display"></div>
-            </div>
-
+            <div class="panel-header"><h2>🎮 CONTROLES</h2></div>
+            <div id="next-piece" class="info-box"><div id="next-label">SIGUIENTE</div><div id="next-display"></div></div>
             <div id="hold-piece" class="info-box">HOLD</div>
-
             <div class="stats-container">
-                <div class="stat-item">
-                    <span class="stat-label">SCORE</span>
-                    <span id="score" class="stat-value">0</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">LEVEL</span>
-                    <span id="level" class="stat-value">1</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">TIME</span>
-                    <span id="time" class="stat-value">00:00</span>
-                </div>
+                <div class="stat-item"><span class="stat-label">SCORE</span><span id="score" class="stat-value">0</span></div>
+                <div class="stat-item"><span class="stat-label">LEVEL</span><span id="level" class="stat-value">1</span></div>
+                <div class="stat-item"><span class="stat-label">TIME</span><span id="time" class="stat-value">00:00</span></div>
             </div>
-
             <div class="button-group">
-                <button id="start-button" class="btn btn-start" onclick="iniciar_juego();">
-                    <span class="btn-icon">▶</span> INICIAR
-                </button>
-                <button id="pause-button" class="btn btn-pause" onclick="togglePause();" style="display: none;">
-                    <span class="btn-icon">⏸</span> PAUSA
-                </button>
-                <button id="restart-button" class="btn btn-restart" onclick="restartGame();" style="display: none;">
-                    <span class="btn-icon">↻</span> REINICIAR
-                </button>
-                <button id="guardar-score-button" class="btn btn-save" style="display: none;"
-                    onclick="forzarGameOverArcade()">
-                    <span class="btn-icon">💾</span> GUARDAR
-                </button>
+                <button id="start-button" class="btn btn-start" onclick="iniciar_juego();"><span class="btn-icon">▶</span> INICIAR</button>
+                <button id="pause-button" class="btn btn-pause" onclick="togglePause();" style="display: none;"><span class="btn-icon">⏸</span> PAUSA</button>
+                <button id="restart-button" class="btn btn-restart" onclick="restartGame();" style="display: none;"><span class="btn-icon">↻</span> REINICIAR</button>
+                <button id="guardar-score-button" class="btn btn-save" style="display: none;" onclick="forzarGameOverArcade()"><span class="btn-icon">💾</span> GUARDAR</button>
             </div>
         </div>
 
-        <!-- 🎮 Canvas del Juego -->
+        <!-- 🎮 Canvas Tablero -->
         <div id="game-column">
-            <div class="canvas-wrapper">
-                <canvas id="tetris-canvas"></canvas>
-                <div class="canvas-glow"></div>
-            </div>
-
-            <!-- 📱 Controles Móviles -->
+            <div class="canvas-wrapper"><canvas id="tetris-canvas"></canvas><div class="canvas-glow"></div></div>
             <div class="mobile-controls" style="display: grid;">
-                <button class="mobile-btn mobile-left" id="btn-left">
-                    <i class="fa-solid fa-chevron-left"></i>
-                </button>
-                <button class="mobile-btn mobile-rotate" id="btn-rotate">
-                    <i class="fa-solid fa-rotate-right"></i>
-                </button>
-                <button class="mobile-btn mobile-right" id="btn-right">
-                    <i class="fa-solid fa-chevron-right"></i>
-                </button>
-                <button class="mobile-btn mobile-down" id="btn-down">
-                    <i class="fa-solid fa-chevron-down"></i>
-                </button>
+                <button class="mobile-btn mobile-left" id="btn-left"><i class="fa-solid fa-chevron-left"></i></button>
+                <button class="mobile-btn mobile-rotate" id="btn-rotate"><i class="fa-solid fa-rotate-right"></i></button>
+                <button class="mobile-btn mobile-right" id="btn-right"><i class="fa-solid fa-chevron-right"></i></button>
+                <button class="mobile-btn mobile-down" id="btn-down"><i class="fa-solid fa-chevron-down"></i></button>
             </div>
         </div>
 
-        <!-- 🏆 Tabla de Puntajes -->
+        <!-- 🏆 Top Scores -->
         <div id="leaderboard-container" class="glass-panel">
-            <div class="panel-header">
-                <h2>🏆 TOP SCORES</h2>
-            </div>
+            <div class="panel-header"><h2>🏆 TOP SCORES</h2></div>
             <table id="leaderboard-table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Jugador</th>
-                        <th>Puntaje</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>#</th><th>Jugador</th><th>Puntaje</th></tr></thead>
                 <tbody></tbody>
             </table>
         </div>
 
-        <!-- 💾 Modal Arcade GAME OVER -->
+        <!-- 💾 Modal Game Over -->
         <div id="arcade-game-over" class="arcade-modal hidden">
             <div class="modal-content">
                 <h1 class="game-over-title">🎮 GAME OVER</h1>
-                <div class="score-display">
-                    <span class="score-label">TU PUNTAJE</span>
-                    <span id="arcade-score" class="final-score">0</span>
-                </div>
+                <div class="score-display"><span class="score-label">TU PUNTAJE</span><span id="arcade-score" class="final-score">0</span></div>
                 <input type="text" id="arcade-nombre" placeholder="INGRESA TU NOMBRE..." maxlength="20">
-                <button class="btn-save-score" id="btn-save-arcade">
-                    💾 GUARDAR PUNTAJE
-                </button>
+                <button class="btn-save-score" id="btn-save-arcade">💾 GUARDAR PUNTAJE</button>
             </div>
         </div>
     </div>
 
-    <!-- ✅ FOOTER -->
     <footer id="footer">
         <div class="footer-content">
             <p>Hecho con <span class="heart">❤️</span> por <strong>Juan Abel (Jabel Dev)</strong></p>
@@ -144,11 +70,17 @@
     </footer>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-
-    <!-- Leaderboard conectado a PostgreSQL en Dokploy -->
-    <script src="dist/js/api-scores.js?v=2.2"></script>
-    <script src="dist/js/source_game.js?v=2.2"></script>
-    <script src="dist/js/mobile-controls.js?v=2.2"></script>
+    <!-- Módulos de Arquitectura Tetris (<100 líneas c/u) -->
+    <script src="dist/js/tetris/ui-toast.js?v=3.0"></script>
+    <script src="dist/js/tetris/tetris-config.js?v=3.0"></script>
+    <script src="dist/js/tetris/piece-factory.js?v=3.0"></script>
+    <script src="dist/js/tetris/board-model.js?v=3.0"></script>
+    <script src="dist/js/tetris/tetris-renderer.js?v=3.0"></script>
+    <script src="dist/js/tetris/game-state.js?v=3.0"></script>
+    <script src="dist/js/tetris/input-controller.js?v=3.0"></script>
+    <script src="dist/js/tetris/game-engine.js?v=3.0"></script>
+    <script src="dist/js/tetris/game-facade.js?v=3.0"></script>
+    <script src="dist/js/api-scores.js?v=3.0"></script>
+    <script src="dist/js/source_game.js?v=3.0"></script>
 </body>
-
 </html>
