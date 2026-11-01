@@ -43,6 +43,17 @@ async function ensureTable() {
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       );
       CREATE INDEX IF NOT EXISTS idx_scores_game_puntaje ON scores(game, puntaje DESC);
+
+      CREATE TABLE IF NOT EXISTS chat_messages (
+        id SERIAL PRIMARY KEY,
+        channel VARCHAR(50) NOT NULL DEFAULT 'general',
+        sender VARCHAR(50) NOT NULL,
+        ciphertext TEXT NOT NULL,
+        iv VARCHAR(50) NOT NULL,
+        is_ephemeral BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      );
+      CREATE INDEX IF NOT EXISTS idx_chat_channel ON chat_messages(channel, id DESC);
     `);
     tableReady = true;
     console.log('✅ PostgreSQL: Tabla scores verificada y lista.');
@@ -164,6 +175,9 @@ app.get('/api/health', async (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+
+// 4. Módulo de Chat Cifrado WebSockets / REST
+app.use('/api/chat', require('./routes/chat')(pool, ensureTable));
 
 // --- SERVICIO DE ARCHIVOS ESTÁTICOS ---
 express.static.mime.define({

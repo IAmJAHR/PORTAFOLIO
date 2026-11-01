@@ -16,6 +16,8 @@ COPY server.js ./
 COPY index.html ./
 COPY game.html ./
 COPY mototaxi.html ./
+COPY chat.html ./
+COPY routes/ ./routes/
 COPY css/ ./css/
 COPY dist/ ./dist/
 COPY image/ ./image/

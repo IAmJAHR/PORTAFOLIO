@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[ SECURE_CHAT_PROTOCOL ] // Juan Abel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/chat.css?v=1.0">
+</head>
+<body class="chat-body">
+    <!-- Navbar -->
+    <header class="chat-navbar">
+        <div style="display:flex; align-items:center; gap:14px;">
+            <a href="index.html" class="btn-back"><i class="fas fa-chevron-left"></i> VOLVER</a>
+            <span class="brand-title">[ SECURE_CHAT_PROTOCOL ]</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+            <span class="brand-badge"><i class="fas fa-shield-halved"></i> E2E AES-256</span>
+        </div>
+    </header>
+
+    <div class="chat-workspace">
+        <!-- Sidebar -->
+        <aside class="chat-sidebar">
+            <div>
+                <div class="sidebar-section-title">Canales Cifrados</div>
+                <ul class="channel-list">
+                    <li class="channel-item active" data-channel="general-ops"><i class="fas fa-hashtag"></i> general-ops</li>
+                    <li class="channel-item" data-channel="cryptography-lab"><i class="fas fa-key"></i> crypto-lab</li>
+                    <li class="channel-item" data-channel="enterprise-sap"><i class="fas fa-network-wired"></i> enterprise-sap</li>
+                </ul>
+            </div>
+            <div class="config-group">
+                <label class="sidebar-section-title">Tu Alias</label>
+                <input type="text" id="chat-alias-input" class="config-input" maxlength="20">
+            </div>
+            <div class="config-group">
+                <label class="sidebar-section-title">Clave de Descifrado (Passphrase)</label>
+                <input type="password" id="chat-key-input" class="config-input">
+            </div>
+        </aside>
+
+        <!-- Viewport -->
+        <main class="chat-viewport">
+            <div id="chat-messages" class="chat-messages">
+                <div style="text-align:center; color:var(--text-dim); font-size:11px; margin:20px 0;">
+                    🔒 CANAL CIFRADO DE PUNTO A PUNTO // MENSAJES TRANSMITIDOS MEDIANTE PROTOCOLO SEGURO
+                </div>
+            </div>
+            <div class="chat-input-bar">
+                <button type="button" id="btn-ephemeral" class="btn-action-tool" title="Auto-destrucción 30s">
+                    <i class="fas fa-fire"></i> EFÍMERO
+                </button>
+                <form id="chat-form" class="chat-form">
+                    <input type="text" id="chat-text-input" class="chat-input-field" placeholder="Escribe un mensaje seguro..." autocomplete="off" required>
+                    <button type="submit" class="btn-send"><i class="fas fa-paper-plane"></i> ENVIAR</button>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts Modulares (<100 líneas c/u) -->
+    <script src="dist/js/tetris/ui-toast.js?v=1.0"></script>
+    <script src="dist/js/chat/chat-crypto.js?v=1.0"></script>
+    <script src="dist/js/chat/chat-state.js?v=1.0"></script>
+    <script src="dist/js/chat/chat-network.js?v=1.0"></script>
+    <script src="dist/js/chat/chat-ui.js?v=1.0"></script>
+    <script src="dist/js/chat/chat-main.js?v=1.0"></script>
+</body>
+</html>
