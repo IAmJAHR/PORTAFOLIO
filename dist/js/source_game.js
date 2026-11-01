@@ -448,6 +448,12 @@
         requestAnimationFrame(update);
     }
 
+    // Exponer controles para mobile-controls.js
+    window.playerMove = playerMove;
+    window.playerRotate = playerRotate;
+    window.playerDrop = playerDrop;
+    window.playerHardDrop = playerHardDrop;
+
     // --- ACCIONES Y BOTONES DE JUEGO ---
     window.iniciar_juego = function() {
         if (gameStarted && !isGameOver) return;
