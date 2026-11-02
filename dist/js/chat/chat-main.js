@@ -67,7 +67,8 @@
                 textInput.value = '';
                 await net.sendMessage(ciphertext, iv);
             } catch (err) {
-                window.CyberToast?.error('Error al transmitir el mensaje.');
+                console.error('Error al enviar:', err);
+                window.CyberToast?.error(err.message || 'Error al transmitir el mensaje.');
             }
         });
 

@@ -40,7 +40,10 @@
                         isEphemeral: this.state.isEphemeral
                     })
                 });
-                if (!res.ok) throw new Error('Error al enviar');
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.error || `Servidor error ${res.status}`);
+                }
                 const data = await res.json();
                 if (data.message) {
                     this.state.knownMessageIds.add(data.message.id);
