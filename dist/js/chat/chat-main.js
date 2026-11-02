@@ -9,45 +9,51 @@
             msgs.forEach(m => ui.appendMessage(m, isMine || m.sender === state.userAlias));
         });
 
-        function renderChannels() {
+        async function syncRooms() {
             const list = document.getElementById('chat-channel-list');
             if (!list) return;
-            const defs = [
-                { id: 'general-ops', label: 'general-ops', icon: 'fa-hashtag' },
-                { id: 'cryptography-lab', label: 'crypto-lab', icon: 'fa-key' },
-                { id: 'enterprise-sap', label: 'enterprise-sap', icon: 'fa-network-wired' }
-            ];
-            const all = [...defs, ...state.customRooms.map(r => ({ id: r.name, label: r.name + ' (privada)', icon: 'fa-shield-halved' }))];
-            list.innerHTML = all.map(c => `
-                <li class="channel-item ${state.channel === c.id ? 'active' : ''}" data-channel="${c.id}">
-                    <i class="fas ${c.icon}"></i> ${c.label}
+            const rooms = await net.fetchRooms();
+            list.innerHTML = rooms.map(r => `
+                <li class="channel-item ${state.channel === r.name ? 'active' : ''}" data-channel="${r.name}" data-priv="${r.is_private}">
+                    <i class="fas ${r.is_private ? 'fa-lock' : 'fa-hashtag'}"></i> ${r.name} ${r.is_private ? '<span style=\"font-size:9px;color:var(--purple);\">[PRIVADA]</span>' : ''}
                 </li>
             `).join('');
 
             list.querySelectorAll('.channel-item').forEach(btn => {
                 btn.addEventListener('click', () => {
+                    const chan = btn.dataset.channel;
+                    const isPriv = btn.dataset.priv === 'true';
                     list.querySelectorAll('.channel-item').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
+
+                    if (isPriv && !localStorage.getItem('chat_pass_' + chan)) {
+                        const pass = prompt(`🔒 Sala privada #${chan}. Ingresa la contraseña de descifrado:`);
+                        if (pass) localStorage.setItem('chat_pass_' + chan, pass.trim());
+                    }
+
                     ui.clear();
-                    state.setChannel(btn.dataset.channel);
+                    state.setChannel(chan);
                     const k = document.getElementById('chat-key-input');
                     if (k) k.value = state.passphrase;
                     net.fetchMessages();
-                    window.CyberToast?.info(`Conectado a #${btn.dataset.channel}`);
+                    window.CyberToast?.info(`Conectado a #${chan}`);
                 });
             });
         }
 
-        renderChannels();
-        state.subscribe((evt) => { if (evt === 'room_created') renderChannels(); });
-
-        new window.ChatAuthModal(state, () => {
+        new window.ChatAuthModal(state, net, () => {
             const a = document.getElementById('chat-alias-input'); if (a) a.value = state.userAlias;
             const k = document.getElementById('chat-key-input'); if (k) k.value = state.passphrase;
+            syncRooms();
+            setInterval(syncRooms, 8000);
             net.startPolling(2500);
         });
 
         new window.ChatTutorial();
+
+        state.subscribe((evt) => {
+            if (evt === 'channel_changed') syncRooms();
+        });
 
         document.getElementById('chat-alias-input')?.addEventListener('change', (e) => state.setAlias(e.target.value));
         document.getElementById('chat-key-input')?.addEventListener('change', (e) => {
