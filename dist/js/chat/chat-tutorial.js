@@ -40,7 +40,8 @@
             if (this.nextBtn) this.nextBtn.addEventListener('click', () => this.next());
 
             const seen = localStorage.getItem('chat_tut_seen');
-            if (!seen) {
+            const hasAlias = localStorage.getItem('chat_alias');
+            if (!seen && hasAlias) {
                 setTimeout(() => this.show(0), 600);
             }
         }

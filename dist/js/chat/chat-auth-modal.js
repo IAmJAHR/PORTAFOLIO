@@ -13,18 +13,21 @@
 
         initUserGate() {
             const gate = document.getElementById('modal-user-gate');
+            const form = document.getElementById('gate-form');
             const input = document.getElementById('gate-alias-input');
-            const btn = document.getElementById('gate-submit-btn');
             if (!this.state.userAlias) {
                 gate.classList.remove('hidden');
-                btn.addEventListener('click', () => {
+                const submitAlias = (e) => {
+                    if (e) e.preventDefault();
                     const alias = input.value.trim();
                     if (!alias) { window.CyberToast?.warning('Ingresa tu alias de operador.'); return; }
                     this.state.setAlias(alias);
                     gate.classList.add('hidden');
                     window.CyberToast?.success(`Identidad verificada: ${alias}`);
                     if (this.onReady) this.onReady();
-                });
+                };
+                if (form) form.addEventListener('submit', submitAlias);
+                else document.getElementById('gate-submit-btn')?.addEventListener('click', submitAlias);
             } else {
                 gate.classList.add('hidden');
                 if (this.onReady) this.onReady();

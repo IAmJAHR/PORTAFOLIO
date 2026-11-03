@@ -5,9 +5,15 @@
     document.addEventListener('DOMContentLoaded', () => {
         const state = new window.ChatState();
         const ui = new window.ChatUI(state);
+        const sidebar = document.querySelector('.chat-sidebar');
         const net = new window.ChatNetwork(state, (msgs, isMine) => {
             msgs.forEach(m => ui.appendMessage(m, isMine || m.sender === state.userAlias));
         });
+
+        document.getElementById('btn-toggle-sidebar')?.addEventListener('click', (e) => {
+            e.stopPropagation(); sidebar?.classList.toggle('open');
+        });
+        document.querySelector('.chat-viewport')?.addEventListener('click', () => sidebar?.classList.remove('open'));
 
         async function syncRooms() {
             const list = document.getElementById('chat-channel-list');
@@ -15,7 +21,7 @@
             const rooms = await net.fetchRooms();
             list.innerHTML = rooms.map(r => `
                 <li class="channel-item ${state.channel === r.name ? 'active' : ''}" data-channel="${r.name}" data-priv="${r.is_private}">
-                    <i class="fas ${r.is_private ? 'fa-lock' : 'fa-hashtag'}"></i> ${r.name} ${r.is_private ? '<span style=\"font-size:9px;color:var(--purple);\">[PRIVADA]</span>' : ''}
+                    <i class="fas ${r.is_private ? 'fa-lock' : 'fa-hashtag'}"></i> ${r.name} ${r.is_private ? '<span style="font-size:9px;color:var(--purple);">[PRIVADA]</span>' : ''}
                 </li>
             `).join('');
 
@@ -25,12 +31,11 @@
                     const isPriv = btn.dataset.priv === 'true';
                     list.querySelectorAll('.channel-item').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
+                    sidebar?.classList.remove('open');
 
                     if (isPriv && !localStorage.getItem('chat_pass_' + chan)) {
-                        const pass = prompt(`🔒 Sala privada #${chan}. Ingresa la contraseña de descifrado:`);
-                        if (pass) localStorage.setItem('chat_pass_' + chan, pass.trim());
+                        window.CyberToast?.warning(`Sala privada: ingresa la clave E2E abajo`);
                     }
-
                     ui.clear();
                     state.setChannel(chan);
                     const k = document.getElementById('chat-key-input');
@@ -50,10 +55,7 @@
         });
 
         new window.ChatTutorial();
-
-        state.subscribe((evt) => {
-            if (evt === 'channel_changed') syncRooms();
-        });
+        state.subscribe((evt) => { if (evt === 'channel_changed') syncRooms(); });
 
         document.getElementById('chat-alias-input')?.addEventListener('change', (e) => state.setAlias(e.target.value));
         document.getElementById('chat-key-input')?.addEventListener('change', (e) => {
