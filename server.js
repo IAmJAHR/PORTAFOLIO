@@ -204,6 +204,25 @@ app.use(express.static(path.join(__dirname), {
   }
 }));
 
+// Rutas amigables para páginas principales (con o sin .html o barra final)
+app.get(['/chat', '/chat/', '/chat.html/'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'chat.html'));
+});
+app.get(['/game', '/game/', '/game.html/'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'game.html'));
+});
+app.get(['/mototaxi', '/mototaxi/', '/mototaxi.html/'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'mototaxi.html'));
+});
+
+// Rescate de páginas y assets estáticos si se acceden desde una subruta con barra final
+app.get(/^\/.+\/(chat|game|mototaxi|index)(\.html)?\/?$/, (req, res) => {
+  res.redirect(301, `/${req.params[0]}.html`);
+});
+app.get(/^\/.+\/(css|dist|image|modelos)\/(.+)$/, (req, res) => {
+  res.redirect(301, `/${req.params[0]}/${req.params[1]}`);
+});
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
