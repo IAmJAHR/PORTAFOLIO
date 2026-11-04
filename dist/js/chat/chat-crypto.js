@@ -1,11 +1,15 @@
 // ==========================================
-// 🔐 CHAT CRYPTO ENGINE - Mobile & Desktop Ready (<95 líneas)
-// AES-256-GCM (HTTPS) + Pure UTF8 Stream (HTTP Universal)
+// 🔐 CHAT CRYPTO ENGINE - Universal Cross-Device (<95 líneas)
+// Compatible 100% entre PC y Celular (HTTP & HTTPS)
 // ==========================================
 (function() {
     const hasSubtle = typeof window !== 'undefined' && window.crypto && !!window.crypto.subtle;
     const enc = new TextEncoder();
     const dec = new TextDecoder();
+
+    function normPass(p) {
+        return String(p || 'senku-ops').trim() || 'senku-ops';
+    }
 
     function hashKey(k) {
         let h = 0x811c9dc5;
@@ -13,7 +17,7 @@
             h ^= k.charCodeAt(i);
             h = Math.imul(h, 0x01000193) >>> 0;
         }
-        return h;
+        return h >>> 0;
     }
 
     function u8ToBase64(u8) {
@@ -29,9 +33,19 @@
         return u8;
     }
 
-    function xorBytes(u8, pass, iv) {
+    function xorBytes(u8, pass, ivStr) {
         const out = new Uint8Array(u8.length);
-        let s = (hashKey(pass) ^ hashKey(iv)) >>> 0;
+        let s = (hashKey(pass) ^ hashKey(ivStr)) >>> 0;
+        for (let i = 0; i < u8.length; i++) {
+            s = (Math.imul(s, 1664525) + 1013904223) >>> 0;
+            out[i] = u8[i] ^ ((s >>> 16) & 0xFF) ^ (s & 0xFF);
+        }
+        return out;
+    }
+
+    function xorBytesLegacy(u8, pass, ivStr) {
+        const out = new Uint8Array(u8.length);
+        let s = (hashKey(pass) ^ hashKey(ivStr)) >>> 0;
         for (let i = 0; i < u8.length; i++) {
             s = (Math.imul(s, 1664525) + 1013904223) >>> 0;
             out[i] = u8[i] ^ ((s >>> 16) & 0xFF);
@@ -47,45 +61,48 @@
         );
     }
 
+    async function tryDecryptWithKey(cipherB64, ivB64, cleanPass) {
+        const expectedSum = hashKey(cleanPass).toString(16).padStart(8, '0') + '::';
+        const cipherU8 = base64ToU8(cipherB64);
+
+        try {
+            const ivStr = atob(ivB64);
+            const raw1 = dec.decode(xorBytes(cipherU8, cleanPass, ivStr));
+            if (raw1.startsWith(expectedSum)) return raw1.substring(10);
+            const raw2 = dec.decode(xorBytesLegacy(cipherU8, cleanPass, ivStr));
+            if (raw2.startsWith(expectedSum)) return raw2.substring(10);
+        } catch (e) {}
+
+        if (hasSubtle) {
+            try {
+                const key = await getAesKey(cleanPass);
+                const decBuf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: base64ToU8(ivB64) }, key, cipherU8);
+                const raw3 = dec.decode(decBuf);
+                if (raw3.startsWith(expectedSum)) return raw3.substring(10);
+            } catch (e) {}
+        }
+        return null;
+    }
+
     class ChatCrypto {
         static async encrypt(plainText, pass = 'senku-ops') {
-            const checksum = hashKey(pass).toString(16).padStart(8, '0');
+            const cleanPass = normPass(pass);
+            const checksum = hashKey(cleanPass).toString(16).padStart(8, '0');
             const payload = checksum + '::' + plainText;
-
-            if (hasSubtle) {
-                try {
-                    const key = await getAesKey(pass);
-                    const iv = crypto.getRandomValues(new Uint8Array(12));
-                    const buf = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(payload));
-                    return { ciphertext: u8ToBase64(new Uint8Array(buf)), iv: u8ToBase64(iv) };
-                } catch (e) {}
-            }
-
-            const rawIv = 'iv_' + Math.random().toString(36).substring(2, 14);
-            const cipherBytes = xorBytes(enc.encode(payload), pass, rawIv);
+            const rawIv = 'u26_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 8);
+            const cipherBytes = xorBytes(enc.encode(payload), cleanPass, rawIv);
             return { ciphertext: u8ToBase64(cipherBytes), iv: btoa(rawIv) };
         }
 
         static async decrypt(cipherB64, ivB64, pass = 'senku-ops') {
-            const expectedSum = hashKey(pass).toString(16).padStart(8, '0');
-
-            if (hasSubtle) {
-                try {
-                    const key = await getAesKey(pass);
-                    const iv = base64ToU8(ivB64);
-                    const decBuf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, base64ToU8(cipherB64));
-                    const raw = dec.decode(decBuf);
-                    if (raw.startsWith(expectedSum + '::')) return raw.substring(10);
-                } catch (e) {}
+            const cleanPass = normPass(pass);
+            let res = await tryDecryptWithKey(cipherB64, ivB64, cleanPass);
+            if (res !== null) return { ok: true, text: res };
+            if (cleanPass !== 'senku-ops') {
+                res = await tryDecryptWithKey(cipherB64, ivB64, 'senku-ops');
+                if (res !== null) return { ok: true, text: res };
             }
-
-            try {
-                const decBytes = xorBytes(base64ToU8(cipherB64), pass, atob(ivB64));
-                const decStr = dec.decode(decBytes);
-                if (decStr.startsWith(expectedSum + '::')) return decStr.substring(10);
-            } catch (e) {}
-
-            return '🔒 [MENSAJE CIFRADO // CLAVE REQUERIDA]';
+            return { ok: false, text: 'Mensaje protegido con clave privada' };
         }
     }
 

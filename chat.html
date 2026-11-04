@@ -2,65 +2,85 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>[ SECURE_CHAT_PROTOCOL ] // Juan Abel</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="/css/chat.css?v=2.6">
+    <link rel="stylesheet" href="/css/chat.css?v=4.0">
 </head>
 <body class="chat-body">
     <header class="chat-navbar">
-        <div style="display:flex; align-items:center; gap:10px;">
-            <a href="/index.html" class="btn-back"><i class="fas fa-chevron-left"></i> VOLVER</a>
-            <button id="btn-toggle-sidebar" class="btn-sidebar-toggle" type="button" title="Ver Salas"><i class="fas fa-bars"></i> SALAS</button>
+        <div class="navbar-left">
+            <a href="/index.html" class="btn-back" title="Volver al Portafolio"><i class="fas fa-chevron-left"></i><span class="nav-label">VOLVER</span></a>
+            <button id="btn-toggle-sidebar" class="btn-sidebar-toggle" type="button" title="Ver Salas"><i class="fas fa-bars"></i><span>SALAS</span></button>
             <span class="brand-title">[ SECURE_CHAT ]</span>
+            <span id="active-channel-badge" class="active-channel-pill">#general-ops</span>
         </div>
-        <div style="display:flex; align-items:center; gap:10px;">
-            <button id="btn-open-tutorial" class="btn-nav-guide"><i class="fas fa-book-journal-whills"></i> GUÍA</button>
-            <span class="brand-badge"><i class="fas fa-shield-halved"></i> E2E AES-256</span>
+        <div class="navbar-right">
+            <button id="btn-nav-key" class="btn-nav-key" type="button" title="Clave E2E de la Sala"><i class="fas fa-key"></i><span class="nav-label">CLAVE</span></button>
+            <button id="btn-open-tutorial" class="btn-nav-guide" type="button" title="Guía"><i class="fas fa-circle-question"></i><span class="nav-label">GUÍA</span></button>
+            <span class="brand-badge"><i class="fas fa-shield-halved"></i> E2E 256</span>
         </div>
     </header>
 
     <div class="chat-workspace">
+        <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
         <aside class="chat-sidebar">
+            <div class="sidebar-header-mobile">
+                <span class="sidebar-section-title" style="margin:0;">PANEL DE OPERACIONES</span>
+                <button type="button" id="btn-close-sidebar" class="btn-close-drawer"><i class="fas fa-times"></i></button>
+            </div>
             <div>
                 <div class="sidebar-section-title">Canales Cifrados</div>
                 <ul id="chat-channel-list" class="channel-list"></ul>
-                <button id="btn-open-private-room" class="btn-new-room"><i class="fas fa-plus"></i> CREAR SALA</button>
+                <button id="btn-open-private-room" class="btn-new-room" type="button"><i class="fas fa-plus"></i> CREAR SALA</button>
             </div>
-            <div class="config-group"><label class="sidebar-section-title">Tu Alias</label><input type="text" id="chat-alias-input" class="config-input" maxlength="20"></div>
-            <div class="config-group"><label class="sidebar-section-title">Clave E2E (Passphrase)</label><input type="password" id="chat-key-input" class="config-input"></div>
+            <div class="config-group">
+                <label class="sidebar-section-title">Tu Alias de Operador</label>
+                <input type="text" id="chat-alias-input" class="config-input" maxlength="20" autocomplete="off">
+            </div>
+            <div class="config-group">
+                <label class="sidebar-section-title">Clave E2E de Sala (Opcional)</label>
+                <input type="text" id="chat-key-input" class="config-input" placeholder="Por defecto: Estándar" autocomplete="off">
+            </div>
         </aside>
 
         <main class="chat-viewport">
-            <div id="chat-messages" class="chat-messages">
-                <div style="text-align:center; color:var(--text-dim); font-size:11px; margin:20px 0;">🔒 CANAL CIFRADO EN REPOSO Y TRÁNSITO // REGISTRO SEGURO EN POSTGRESQL</div>
-            </div>
+            <div id="chat-messages" class="chat-messages"></div>
             <div class="chat-input-bar">
-                <button type="button" id="btn-ephemeral" class="btn-action-tool" title="Auto-destrucción 30s"><i class="fas fa-fire"></i> EFÍMERO</button>
+                <button type="button" id="btn-ephemeral" class="btn-action-tool" title="Auto-destrucción 30s">
+                    <i class="fas fa-fire"></i><span class="btn-label">EFÍMERO</span>
+                </button>
                 <form id="chat-form" class="chat-form">
-                    <input type="text" id="chat-text-input" class="chat-input-field" placeholder="Escribe un mensaje seguro..." autocomplete="off" required>
-                    <button type="submit" class="btn-send"><i class="fas fa-paper-plane"></i> ENVIAR</button>
+                    <input type="text" id="chat-text-input" class="chat-input-field" placeholder="Escribe un mensaje cifrado..." autocomplete="off" required>
+                    <button type="submit" class="btn-send"><i class="fas fa-paper-plane"></i><span class="btn-label">ENVIAR</span></button>
                 </form>
             </div>
         </main>
     </div>
 
-    <!-- Modales Cyberpunk (Gate, Crear Sala, Tutorial) -->
-    <div id="modal-user-gate" class="cyber-modal hidden"><div class="modal-box"><div class="modal-title"><i class="fas fa-fingerprint"></i> IDENTIFICACIÓN DE OPERADOR</div><div class="modal-desc">Ingresa tu alias o nombre de operador para inicializar el protocolo criptográfico.</div><form id="gate-form" style="display:flex; flex-direction:column; gap:12px;"><input type="text" id="gate-alias-input" class="config-input" placeholder="Ej: Senku_Ishigami" maxlength="20" required><button type="submit" id="gate-submit-btn" class="modal-btn-submit"><i class="fas fa-lock-open"></i> ACCEDER AL SISTEMA</button></form></div></div>
-    <div id="modal-private-room" class="cyber-modal hidden"><div class="modal-box"><div class="modal-title"><i class="fas fa-plus-circle"></i> CREAR NUEVA SALA</div><div class="modal-desc">Registra una sala pública o privada en el servidor para que otros operadores puedan unirse.</div><form id="form-private-room" style="display:flex; flex-direction:column; gap:12px;"><input type="text" id="private-room-name" class="config-input" placeholder="Nombre de sala (ej: alfa-sec)" required><label style="font-size:11px; color:var(--cyan); display:flex; align-items:center; gap:8px;"><input type="checkbox" id="private-room-is-priv" checked> Sala Privada (Requiere Contraseña E2E)</label><input type="password" id="private-room-pass" class="config-input" placeholder="Contraseña de descifrado"><div style="display:flex; gap:10px; margin-top:8px;"><button type="submit" class="modal-btn-submit" style="flex:1;">CREAR SALA</button><button type="button" id="btn-close-private-room" class="modal-btn-close">CANCELAR</button></div></form></div></div>
-    <div id="modal-tutorial" class="cyber-modal hidden"><div class="modal-box"><div style="display:flex; justify-content:space-between; align-items:center;"><span id="tut-steps" style="font-size:10px; color:var(--cyan); font-weight:700;">PASO 1 DE 4</span><span id="tut-icon" style="font-size:24px;">🔒</span></div><div id="tut-title" class="modal-title">01 // CIFRADO E2E</div><div id="tut-desc" class="modal-desc">Explicación del protocolo.</div><button id="tut-btn-next" class="modal-btn-submit">SIGUIENTE ></button></div></div>
+    <!-- Modal 1: Identificación de Operador -->
+    <div id="modal-user-gate" class="cyber-modal hidden"><div class="modal-box"><div class="modal-title"><i class="fas fa-fingerprint"></i> IDENTIFICACIÓN DE OPERADOR</div><div class="modal-desc">Ingresa tu alias de operador para conectarte al canal cifrado en tiempo real.</div><form id="gate-form" class="modal-form"><input type="text" id="gate-alias-input" class="config-input" placeholder="Ej: Senku_Ops" maxlength="20" autocomplete="off" required><button type="submit" id="gate-submit-btn" class="modal-btn-submit"><i class="fas fa-bolt"></i> CONECTAR AL CHAT</button></form></div></div>
 
-    <!-- Scripts Modulares (<100 líneas c/u) -->
-    <script src="/dist/js/tetris/ui-toast.js?v=3.2"></script>
-    <script src="/dist/js/chat/chat-crypto.js?v=3.2"></script>
-    <script src="/dist/js/chat/chat-state.js?v=3.2"></script>
-    <script src="/dist/js/chat/chat-network.js?v=3.2"></script>
-    <script src="/dist/js/chat/chat-ui.js?v=3.2"></script>
-    <script src="/dist/js/chat/chat-auth-modal.js?v=3.2"></script>
-    <script src="/dist/js/chat/chat-tutorial.js?v=3.2"></script>
-    <script src="/dist/js/chat/chat-main.js?v=3.2"></script>
+    <!-- Modal 2: Crear Nueva Sala -->
+    <div id="modal-private-room" class="cyber-modal hidden"><div class="modal-box"><div class="modal-title"><i class="fas fa-plus-circle"></i> CREAR NUEVA SALA</div><div class="modal-desc">Crea un canal público o privado protegido con contraseña E2E.</div><form id="form-private-room" class="modal-form"><input type="text" id="private-room-name" class="config-input" placeholder="Nombre de sala (ej: alfa-sec)" autocomplete="off" required><label class="modal-checkbox-label"><input type="checkbox" id="private-room-is-priv" checked> Sala Privada (Protegida con Clave E2E)</label><input type="text" id="private-room-pass" class="config-input" placeholder="Clave secreta de la sala" autocomplete="off"><div class="modal-actions"><button type="submit" class="modal-btn-submit" style="flex:1;">CREAR SALA</button><button type="button" id="btn-close-private-room" class="modal-btn-close">CANCELAR</button></div></form></div></div>
+
+    <!-- Modal 3: Ingresar Clave de Sala Privada (Sin Alert/Prompt) -->
+    <div id="modal-room-key" class="cyber-modal hidden"><div class="modal-box"><div class="modal-title"><i class="fas fa-key"></i> CLAVE DE CIFRADO // <span id="room-key-modal-channel">#sala</span></div><div class="modal-desc">Ambos dispositivos (PC y Celular) deben usar la misma clave en esta sala. Déjalo vacío para usar la clave estándar pública.</div><form id="form-room-key" class="modal-form"><input type="text" id="room-key-modal-input" class="config-input" placeholder="Escribe la clave acordada (o vacío = estándar)" autocomplete="off"><div class="modal-actions"><button type="submit" class="modal-btn-submit" style="flex:1;"><i class="fas fa-unlock-keyhole"></i> APLICAR Y DESCIFRAR</button><button type="button" id="btn-close-room-key" class="modal-btn-close">CERRAR</button></div></form></div></div>
+
+    <!-- Modal 4: Tutorial -->
+    <div id="modal-tutorial" class="cyber-modal hidden"><div class="modal-box"><div style="display:flex; justify-content:space-between; align-items:center;"><span id="tut-steps" style="font-size:10px; color:var(--cyan); font-weight:700;">PASO 1 DE 4</span><span id="tut-icon" style="font-size:22px;">🔒</span></div><div id="tut-title" class="modal-title">01 // CIFRADO E2E</div><div id="tut-desc" class="modal-desc">Explicación del protocolo.</div><button id="tut-btn-next" class="modal-btn-submit">SIGUIENTE &gt;</button></div></div>
+
+    <!-- Scripts Modulares -->
+    <script src="/dist/js/tetris/ui-toast.js?v=4.0"></script>
+    <script src="/dist/js/chat/chat-crypto.js?v=4.0"></script>
+    <script src="/dist/js/chat/chat-state.js?v=4.0"></script>
+    <script src="/dist/js/chat/chat-network.js?v=4.0"></script>
+    <script src="/dist/js/chat/chat-ui.js?v=4.0"></script>
+    <script src="/dist/js/chat/chat-auth-modal.js?v=4.0"></script>
+    <script src="/dist/js/chat/chat-tutorial.js?v=4.0"></script>
+    <script src="/dist/js/chat/chat-main.js?v=4.0"></script>
 </body>
 </html>

@@ -1,13 +1,12 @@
 // ==========================================
-// 🚀 CYBERPUNK ARCADE TOAST NOTIFICATION SYSTEM
-// Patrón: Singleton / Factory - Cero dependencias (No SWAL, No Alert)
+// 🚀 CYBERPUNK HUD TOAST SYSTEM - Mobile & Desktop (<75 líneas)
 // ==========================================
 (function() {
     const ICONS = {
-        success: '🔥',
+        success: '⚡',
         error: '⚠️',
-        warning: '⚡',
-        info: '👾'
+        warning: '🔐',
+        info: '📡'
     };
 
     let container = null;
@@ -16,46 +15,47 @@
         if (!container || !document.body.contains(container)) {
             container = document.createElement('div');
             container.id = 'cyber-toast-container';
-            container.style.cssText = `
-                position: fixed; top: 20px; right: 20px; z-index: 99999;
-                display: flex; flex-direction: column; gap: 12px; pointer-events: none;
-            `;
+            const isMob = window.innerWidth <= 640;
+            container.style.cssText = isMob
+                ? 'position:fixed;top:66px;left:12px;right:12px;z-index:99999;display:flex;flex-direction:column;gap:8px;pointer-events:none;align-items:center;'
+                : 'position:fixed;bottom:76px;right:20px;z-index:99999;display:flex;flex-direction:column;gap:10px;pointer-events:none;align-items:flex-end;';
             document.body.appendChild(container);
         }
         return container;
     }
 
-    function createToast(message, type = 'info', duration = 3500) {
+    function createToast(message, type = 'info', duration = 2800) {
         const cont = getContainer();
         const toast = document.createElement('div');
-        toast.className = `cyber-toast cyber-toast-${type}`;
+        const accent = type === 'success' ? '#00FF87' : type === 'error' ? '#FF0055' : type === 'warning' ? '#FFB800' : '#00D4FF';
+
         toast.style.cssText = `
-            pointer-events: auto; min-width: 280px; max-width: 420px;
-            padding: 14px 20px; border-radius: 10px; font-family: 'Orbitron', monospace;
-            font-size: 13px; color: #fff; background: rgba(10, 15, 30, 0.95);
-            backdrop-filter: blur(12px); border-left: 5px solid ${type === 'success' ? '#00FF87' : type === 'error' ? '#FF0055' : type === 'warning' ? '#FFD93D' : '#00D4FF'};
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 15px ${type === 'success' ? 'rgba(0,255,135,0.3)' : type === 'error' ? 'rgba(255,0,85,0.3)' : 'rgba(0,212,255,0.3)'};
-            display: flex; align-items: center; gap: 12px; transform: translateX(120%);
-            transition: transform 0.35s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.3s ease;
-            opacity: 0;
+            pointer-events:auto; width:fit-content; max-width:min(92vw, 380px);
+            padding:10px 14px; border-radius:8px; font-family:'Orbitron', -apple-system, sans-serif;
+            font-size:11px; letter-spacing:0.4px; color:#E2E8F0;
+            background:rgba(8, 13, 26, 0.94); backdrop-filter:blur(14px);
+            border:1px solid ${accent}; border-left:4px solid ${accent};
+            box-shadow:0 8px 24px rgba(0,0,0,0.6), 0 0 12px ${accent}33;
+            display:flex; align-items:center; gap:10px;
+            transform:translateY(-10px); opacity:0;
+            transition:transform 0.25s ease, opacity 0.25s ease;
         `;
 
         toast.innerHTML = `
-            <span style="font-size: 20px; filter: drop-shadow(0 0 5px currentColor);">${ICONS[type] || '⚡'}</span>
-            <span style="flex: 1; line-height: 1.4; word-break: break-word;">${message}</span>
-            <button style="background: none; border: none; color: #8892b0; font-size: 16px; cursor: pointer; padding: 0 4px;" onclick="this.parentElement.remove()">✕</button>
+            <span style="font-size:14px;line-height:1;">${ICONS[type] || '📡'}</span>
+            <span style="flex:1;line-height:1.35;word-break:break-word;">${message}</span>
         `;
 
         cont.appendChild(toast);
         requestAnimationFrame(() => {
-            toast.style.transform = 'translateX(0)';
+            toast.style.transform = 'translateY(0)';
             toast.style.opacity = '1';
         });
 
         setTimeout(() => {
-            toast.style.transform = 'translateX(120%)';
+            toast.style.transform = 'translateY(-10px)';
             toast.style.opacity = '0';
-            setTimeout(() => toast.remove(), 400);
+            setTimeout(() => toast.remove(), 260);
         }, duration);
     }
 
@@ -67,8 +67,5 @@
         info: (msg, d) => createToast(msg, 'info', d)
     };
 
-    // Reemplazo transparente del alert nativo
-    window.alert = function(msg) {
-        window.CyberToast.info(msg);
-    };
+    window.alert = (msg) => window.CyberToast.info(msg);
 })();
