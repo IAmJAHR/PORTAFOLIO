@@ -153,7 +153,9 @@
       player.money -= tile.price;
       room.properties[tile.id] = { ownerId: player.id, houses: 0 };
       room.logs.push(`🏢 ${player.name} compró [${tile.name}] por $${tile.price}.`);
-      room.turnPhase = 'END';
+      
+      // Tras comprar, avanza automáticamente al turno del siguiente jugador
+      this.executeEndTurn(room);
       return true;
     }
 

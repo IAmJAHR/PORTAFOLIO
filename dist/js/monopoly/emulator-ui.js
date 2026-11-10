@@ -1,6 +1,6 @@
 // =========================================================================
-// 🎮 MONOPOLY EMULATOR CONTROLLER — Patrón: Mediator & Controller
-// Coordina el Emulador Web, Sala de Espera Multiplayer, Botones Arcade y Turnos
+// 🎮 MONOPOLY EMULATOR CONTROLLER v3.0 — Patrón: Mediator & Controller
+// Conecta Dados 3D animados, Salto Casilla por Casilla y Tarjeta Intuitiva
 // =========================================================================
 (function() {
   const { TOKENS, GROUPS, TILES } = window.MonopolyConfig;
@@ -28,6 +28,8 @@
       this.lobbyOverlay = document.getElementById('emu-lobby-overlay');
       this.waitingOverlay = document.getElementById('emu-waiting-overlay');
       this.winnerOverlay = document.getElementById('emu-winner-overlay');
+      this.buyPopup = document.getElementById('emu-buy-popup');
+      this.cardPopup = document.getElementById('emu-card-popup');
 
       this.nameInput = document.getElementById('emu-player-name');
       this.roomNameInput = document.getElementById('emu-room-name');
@@ -56,9 +58,17 @@
       this.renderTokenChips();
 
       const canvas = document.getElementById('monopolyCanvas');
-      this.renderer = new window.MonopolyRenderer(canvas, (tile) => {
-        Audio.beep(520, 0.04, 'square', 0.04);
-        this.renderDeedInspector(tile);
+      this.renderer = new window.MonopolyRenderer(canvas, {
+        onTileClick: (tile) => {
+          Audio.beep(520, 0.04, 'square', 0.04);
+          this.renderDeedInspector(tile);
+        },
+        onCenterClick: () => {
+          // Si es el turno del jugador y toca el centro/dados, lanza inmediatamente
+          if (this.canMyPlayerRoll()) {
+            this.handleRoll();
+          }
+        }
       });
       this.renderDeedInspector(TILES[1]);
 
@@ -67,6 +77,12 @@
         requestAnimationFrame(loop);
       };
       requestAnimationFrame(loop);
+    }
+
+    canMyPlayerRoll() {
+      if (!this.room || this.room.status !== 'PLAYING' || this.renderer.isAnimating()) return false;
+      const active = this.room.players[this.room.turnIndex];
+      return active && active.id === this.playerId && !active.isBot && this.room.turnPhase === 'ROLL';
     }
 
     renderTokenChips() {
@@ -94,7 +110,7 @@
         if (this.bootOverlay) this.bootOverlay.classList.add('hidden');
         if (this.lobbyOverlay) this.lobbyOverlay.classList.remove('hidden');
         Net.fetchRoomsList();
-      }, 1100);
+      }, 900);
 
       setInterval(() => {
         if (this.pingBadgeEl) this.pingBadgeEl.textContent = `${Net.pingMs}ms`;
@@ -108,7 +124,6 @@
         if (event === 'room_updated') this.onRoomUpdated(payload);
       });
 
-      // Crear Sala
       document.getElementById('btn-create-room')?.addEventListener('click', async () => {
         this.saveProfileName();
         try {
@@ -125,14 +140,12 @@
         }
       });
 
-      // Unirse por Código
       document.getElementById('btn-join-code')?.addEventListener('click', async () => {
         const code = this.joinCodeInput?.value?.trim();
         if (!code) return;
         await this.joinRoomByCode(code);
       });
 
-      // Partida Rápida Instantánea (Crea sala con 1 Bot listo o entra directo)
       document.getElementById('btn-quick-play')?.addEventListener('click', async () => {
         this.saveProfileName();
         const room = await Net.createRoom({
@@ -145,13 +158,11 @@
         this.addCpuBot(room);
       });
 
-      // Refrescar lista de salas
       document.getElementById('btn-refresh-rooms')?.addEventListener('click', () => {
         Audio.beep(600, 0.05);
         Net.fetchRoomsList();
       });
 
-      // Botones de Sala de Espera
       this.btnAddBot?.addEventListener('click', () => {
         if (this.room) this.addCpuBot(this.room);
       });
@@ -164,7 +175,7 @@
         this.room.status = 'PLAYING';
         this.room.turnIndex = 0;
         this.room.turnPhase = 'ROLL';
-        this.room.logs.push('🚀 ¡EMULACIÓN INICIADA! Comienza la carrera por el monopolio.');
+        this.room.logs.push('🚀 ¡EMULACIÓN INICIADA! Haz clic en los Dados para lanzar.');
         Audio.bootRom();
         Audio.startBGM();
         Net.pushState(this.room);
@@ -177,40 +188,60 @@
         this.lobbyOverlay.classList.remove('hidden');
       });
 
-      // Controles de Juego y Gamepad del Emulador
+      // Controles de Turno
       this.btnRoll?.addEventListener('click', () => this.handleRoll());
       this.btnBuy?.addEventListener('click', () => this.handleBuy());
       this.btnBail?.addEventListener('click', () => this.handleBail());
       this.btnEnd?.addEventListener('click', () => this.handleEndTurn());
 
+      // Botones del Modal Emergente de Compra de Propiedad
+      document.getElementById('btn-popup-buy')?.addEventListener('click', () => {
+        this.buyPopup?.classList.add('hidden');
+        this.handleBuy();
+      });
+
+      document.getElementById('btn-popup-pass')?.addEventListener('click', () => {
+        this.buyPopup?.classList.add('hidden');
+        this.handleEndTurn();
+      });
+
+      // Botón del Modal Emergente de Carta (Casualidad / Arca Comunal)
+      document.getElementById('btn-popup-card-ok')?.addEventListener('click', () => {
+        this.cardPopup?.classList.add('hidden');
+        if (this.room && this.room.turnPhase === 'END') {
+          this.handleEndTurn();
+        }
+      });
+
       // Botones físicos del Emulador (A, B, START, SELECT, D-PAD)
       document.getElementById('pad-btn-a')?.addEventListener('click', () => {
-        if (!this.room || this.room.status !== 'PLAYING') return;
+        if (!this.room || this.room.status !== 'PLAYING' || this.renderer.isAnimating()) return;
         if (this.room.turnPhase === 'ROLL') this.handleRoll();
-        else if (this.room.turnPhase === 'DECIDE') this.handleBuy();
-        else this.handleEndTurn();
+        else if (this.room.turnPhase === 'DECIDE') {
+          this.buyPopup?.classList.add('hidden');
+          this.handleBuy();
+        } else {
+          this.handleEndTurn();
+        }
       });
 
       document.getElementById('pad-btn-b')?.addEventListener('click', () => {
-        if (!this.room || this.room.status !== 'PLAYING') return;
+        if (!this.room || this.room.status !== 'PLAYING' || this.renderer.isAnimating()) return;
+        this.buyPopup?.classList.add('hidden');
         if (this.room.turnPhase === 'DECIDE' || this.room.turnPhase === 'END') this.handleEndTurn();
       });
 
       document.getElementById('pad-btn-start')?.addEventListener('click', () => {
         if (this.room?.status === 'WAITING') this.btnStartMatch?.click();
-        else if (this.room?.status === 'PLAYING') this.handleEndTurn();
+        else if (this.room?.status === 'PLAYING' && !this.renderer.isAnimating()) this.handleEndTurn();
       });
 
-      document.getElementById('pad-btn-select')?.addEventListener('click', () => {
-        this. stepInspector(1);
-      });
-
+      document.getElementById('pad-btn-select')?.addEventListener('click', () => this.stepInspector(1));
       document.getElementById('dpad-right')?.addEventListener('click', () => this.stepInspector(1));
       document.getElementById('dpad-left')?.addEventListener('click', () => this.stepInspector(-1));
       document.getElementById('dpad-up')?.addEventListener('click', () => this.stepInspector(7));
       document.getElementById('dpad-down')?.addEventListener('click', () => this.stepInspector(-7));
 
-      // Audio & CRT Scanlines Toggles
       document.getElementById('btn-emu-audio')?.addEventListener('click', (e) => {
         const muted = Audio.toggleMute();
         e.currentTarget.innerHTML = muted ? '<i class="fas fa-volume-mute"></i> MUTE' : '<i class="fas fa-music"></i> 8-BIT';
@@ -225,6 +256,7 @@
         Net.leaveRoom();
         this.room = null;
         Audio.stopBGM();
+        this.buyPopup?.classList.add('hidden');
         this.winnerOverlay?.classList.add('hidden');
         this.waitingOverlay?.classList.add('hidden');
         this.lobbyOverlay?.classList.remove('hidden');
@@ -307,7 +339,7 @@
             </span>
           </div>
           <button class="emu-btn-sm" data-join="${r.code}">
-            ${r.status === 'WAITING' ? 'UNIRSE ▶' : 'ESPECTAR 👁️'}
+            ${r.status === 'WAITING' ? 'UNIRSE ▶' : 'ENTRAR 👁️'}
           </button>
         </div>
       `).join('');
@@ -318,6 +350,9 @@
     }
 
     onRoomUpdated(room) {
+      // Si estamos en medio de una animación local de dados/salto, actualizar al terminar
+      if (this.renderer.isAnimating()) return;
+
       this.room = room;
       this.renderer.setRoom(room);
 
@@ -329,6 +364,7 @@
         this.lobbyOverlay?.classList.add('hidden');
         this.waitingOverlay?.classList.remove('hidden');
         this.winnerOverlay?.classList.add('hidden');
+        this.buyPopup?.classList.add('hidden');
         this.renderWaitingRoom(room);
       } else if (room.status === 'PLAYING') {
         this.lobbyOverlay?.classList.add('hidden');
@@ -338,6 +374,7 @@
         this.scheduleBotIfNeeded(room);
       } else if (room.status === 'FINISHED') {
         this.waitingOverlay?.classList.add('hidden');
+        this.buyPopup?.classList.add('hidden');
         this.renderGameHUD(room);
         this.showWinnerModal(room);
       }
@@ -376,18 +413,25 @@
       const activePlayer = room.players[room.turnIndex];
       const isMyTurn = activePlayer && activePlayer.id === this.playerId && !activePlayer.isBot;
 
-      // Lista de jugadores y sus finanzas
       if (this.playersHudEl) {
         this.playersHudEl.innerHTML = room.players.map((p, idx) => {
           const propCount = Object.values(room.properties || {}).filter(pr => pr.ownerId === p.id).length;
+          const isTurn = (idx === room.turnIndex);
           return `
-            <div class="hud-player-card ${idx === room.turnIndex ? 'active-turn' : ''} ${p.bankrupt ? 'is-bankrupt' : ''}" style="border-left: 4px solid ${p.color}">
+            <div class="hud-player-card ${isTurn ? 'active-turn' : ''} ${p.bankrupt ? 'is-bankrupt' : ''}" style="border-left: 5px solid ${p.color}">
               <div class="hp-top">
-                <span class="hp-name">${p.token} ${p.name} ${p.id === this.playerId ? '<small>(TÚ)</small>' : ''}</span>
+                <div class="hp-name-wrap">
+                  <span class="hp-token-badge">${p.token}</span>
+                  <div>
+                    <strong style="color:#ffffff;">${p.name}</strong>
+                    ${p.id === this.playerId ? '<span style="color:#38bdf8;font-size:10px;margin-left:4px;">(TÚ)</span>' : ''}
+                    ${isTurn ? '<span style="color:#ffd700;font-size:10px;margin-left:4px;">● EN TURNO</span>' : ''}
+                  </div>
+                </div>
                 <span class="hp-money">$${p.money}</span>
               </div>
               <div class="hp-sub">
-                <span>🏢 Propiedades: ${propCount}</span>
+                <span>🏢 Propiedades: <strong style="color:#f1f5f9;">${propCount}</strong></span>
                 <span>📍 ${TILES[p.position || 0]?.name}</span>
                 ${p.inJail ? '<span class="jail-pill">⛓️ CÁRCEL</span>' : ''}
               </div>
@@ -396,7 +440,6 @@
         }).join('');
       }
 
-      // Estado de botones de acción
       if (activePlayer) {
         const currentTile = TILES[activePlayer.position || 0];
         const canBuy = isMyTurn && room.turnPhase === 'DECIDE' &&
@@ -414,15 +457,70 @@
         if (this.btnEnd) {
           this.btnEnd.disabled = !(isMyTurn && (room.turnPhase === 'DECIDE' || room.turnPhase === 'END'));
         }
+
+        // Mostrar u ocultar automáticamente la tarjeta emergente de compra cuando es tu turno
+        if (canBuy) {
+          this.showBuyDeedPopup(currentTile);
+        } else {
+          this.buyPopup?.classList.add('hidden');
+        }
       }
 
-      // Actualizar bitácora
       if (this.logsEl && Array.isArray(room.logs)) {
         this.logsEl.innerHTML = room.logs.slice(-12).reverse().map(l => `<div class="log-line">${l}</div>`).join('');
       }
 
-      // Actualizar inspector de título de propiedad
       this.renderDeedInspector(TILES[this.renderer.selectedTileId]);
+    }
+
+    showBuyDeedPopup(tile) {
+      if (!this.buyPopup || !tile) return;
+      const group = tile.group ? GROUPS[tile.group] : null;
+      const headerEl = document.getElementById('popup-deed-header');
+      const groupEl = document.getElementById('popup-deed-group');
+      const nameEl = document.getElementById('popup-deed-name');
+      const priceEl = document.getElementById('popup-deed-price');
+      const rentsEl = document.getElementById('popup-deed-rents');
+
+      if (headerEl) headerEl.style.background = group ? group.color : '#0284c7';
+      if (groupEl) groupEl.textContent = group ? `GRUPO: ${group.name.toUpperCase()}` : 'PROPIEDAD ESPECIAL';
+      if (nameEl) nameEl.textContent = `${tile.icon || '🏢'} ${tile.name}`;
+      if (priceEl) priceEl.textContent = `$${tile.price}`;
+
+      if (rentsEl && tile.rent) {
+        if (tile.type === 'PROP') {
+          rentsEl.innerHTML = `
+            <div><span>Alquiler sin casas:</span><strong>$${tile.rent[0]}</strong></div>
+            <div><span>Con 1 Casa 🏠:</span><strong>$${tile.rent[1]}</strong></div>
+            <div><span>Con 2 Casas 🏠🏠:</span><strong>$${tile.rent[2]}</strong></div>
+            <div><span>Con Hotel 🏨:</span><strong>$${tile.rent[5]}</strong></div>
+          `;
+        } else {
+          rentsEl.innerHTML = `<div><span>Alquiler / Tarifa Base:</span><strong>$${tile.rent[0]}</strong></div>`;
+        }
+      }
+
+      this.buyPopup.classList.remove('hidden');
+    }
+
+    showCardPopup(cardData) {
+      if (!this.cardPopup || !cardData) return;
+      const headerEl = document.getElementById('popup-card-header');
+      const badgeEl = document.getElementById('popup-card-badge');
+      const titleEl = document.getElementById('popup-card-title');
+      const iconEl = document.getElementById('popup-card-icon');
+      const textEl = document.getElementById('popup-card-text');
+
+      const isChest = (cardData.deck === 'CHEST');
+      if (headerEl) {
+        headerEl.className = 'card-action-header ' + (isChest ? 'chest-bg' : 'chance-bg');
+      }
+      if (badgeEl) badgeEl.textContent = isChest ? '📦 ARCA COMUNAL' : '❓ CASUALIDAD';
+      if (titleEl) titleEl.textContent = cardData.title || (isChest ? 'Arca Comunal' : 'Casualidad');
+      if (iconEl) iconEl.textContent = isChest ? '📦' : '❓';
+      if (textEl) textEl.textContent = cardData.text || '';
+
+      this.cardPopup.classList.remove('hidden');
     }
 
     renderDeedInspector(tile) {
@@ -465,61 +563,124 @@
       document.getElementById('btn-build-house')?.addEventListener('click', () => {
         if (Engine.executeBuild(this.room, tile.id)) {
           Audio.buyProperty();
+          this.renderer.addFloatingText(tile.id, '🏠 +1', '#eab308');
           Net.pushState(this.room);
         }
       });
     }
 
     handleRoll() {
-      if (!this.room) return;
+      if (!this.room || this.renderer.isAnimating()) return;
+      const player = this.room.players[this.room.turnIndex];
+      if (!player) return;
+
+      const oldPos = player.position || 0;
+      const oldMoney = player.money;
       const res = Engine.executeRoll(this.room);
+
       if (res) {
         Audio.diceRoll();
-        if (res.tile) {
-          this.renderer.selectedTileId = res.tile.id;
+        if (this.btnRoll) this.btnRoll.disabled = true;
+
+        const steps = res.moved ? (res.d1 + res.d2) : 0;
+        const targetPos = player.position;
+
+        if (res.moved) {
+          this.renderer.playRollAndMove(player.id, oldPos, targetPos, steps, [res.d1, res.d2], () => {
+            const diff = player.money - oldMoney;
+            if (diff > 0) this.renderer.addFloatingText(targetPos, `+$${diff}`, '#16a34a');
+            if (diff < 0) this.renderer.addFloatingText(targetPos, `-$${Math.abs(diff)}`, '#dc2626');
+            
+            // Si cayó en carta de Casualidad o Arca Comunal, mostrar la carta en pantalla
+            if (this.room.lastCard && (res.tile?.type === 'CHANCE' || res.tile?.type === 'CHEST')) {
+              this.showCardPopup(this.room.lastCard);
+            }
+
+            this.renderGameHUD(this.room);
+            Net.pushState(this.room);
+          });
+        } else {
+          this.renderGameHUD(this.room);
+          Net.pushState(this.room);
         }
-        Net.pushState(this.room);
       }
     }
 
     handleBuy() {
       if (!this.room) return;
+      const player = this.room.players[this.room.turnIndex];
+      const pos = player?.position || 0;
+      const price = TILES[pos]?.price || 0;
+
       if (Engine.executeBuy(this.room)) {
         Audio.buyProperty();
+        this.buyPopup?.classList.add('hidden');
+        this.renderer.addFloatingText(pos, `-$${price} 🏢`, '#2563eb');
+        this.renderGameHUD(this.room);
         Net.pushState(this.room);
       }
     }
 
     handleBail() {
       if (!this.room) return;
+      const player = this.room.players[this.room.turnIndex];
       if (Engine.executePayBail(this.room)) {
         Audio.beep(880, 0.1);
+        this.renderer.addFloatingText(player.position || 7, '-$50 🔓', '#eab308');
+        this.renderGameHUD(this.room);
         Net.pushState(this.room);
       }
     }
 
     handleEndTurn() {
-      if (!this.room) return;
+      if (!this.room || this.renderer.isAnimating()) return;
+      this.buyPopup?.classList.add('hidden');
       Engine.executeEndTurn(this.room);
       Audio.stepHop();
+      this.renderGameHUD(this.room);
       Net.pushState(this.room);
     }
 
     scheduleBotIfNeeded(room) {
       clearTimeout(this.botTimer);
+      if (this.renderer.isAnimating()) return;
+
       const current = room.players[room.turnIndex];
       if (!current || !current.isBot || room.status !== 'PLAYING') return;
 
-      // El anfitrión (o el primer jugador humano activo) ejecuta el paso del Bot
       const firstHuman = room.players.find(p => !p.isBot && !p.bankrupt);
       if (firstHuman && firstHuman.id !== this.playerId) return;
 
       this.botTimer = setTimeout(() => {
+        if (!this.room || this.renderer.isAnimating()) return;
+        const bot = this.room.players[this.room.turnIndex];
+        if (!bot || !bot.isBot) return;
+
+        if (this.room.turnPhase === 'ROLL') {
+          const oldPos = bot.position || 0;
+          const oldMoney = bot.money;
+          if (bot.inJail && bot.money >= 250) Engine.executePayBail(this.room);
+          const res = Engine.executeRoll(this.room);
+          if (res && res.moved) {
+            Audio.diceRoll();
+            this.renderer.playRollAndMove(bot.id, oldPos, bot.position, res.d1 + res.d2, [res.d1, res.d2], () => {
+              const diff = bot.money - oldMoney;
+              if (diff !== 0) {
+                this.renderer.addFloatingText(bot.position, diff > 0 ? `+$${diff}` : `-$${Math.abs(diff)}`, diff > 0 ? '#16a34a' : '#dc2626');
+              }
+              this.renderGameHUD(this.room);
+              Net.pushState(this.room);
+            });
+            return;
+          }
+        }
+
         if (Engine.runBotStep(this.room)) {
           Audio.stepHop();
+          this.renderGameHUD(this.room);
           Net.pushState(this.room);
         }
-      }, 950);
+      }, 900);
     }
 
     showWinnerModal(room) {

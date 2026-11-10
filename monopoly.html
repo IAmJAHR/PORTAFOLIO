@@ -31,10 +31,41 @@
   <!-- ==================== GABINETE PRINCIPAL DEL EMULADOR ==================== -->
   <main class="emu-cabinet">
     <!-- 1. PANTALLA CRT DEL EMULADOR -->
-    <section class="emu-crt-screen">
-      <canvas id="monopolyCanvas" width="720" height="720"></canvas>
+    <section class="emu-crt-screen crt-off">
+      <canvas id="monopolyCanvas" width="880" height="880"></canvas>
 
-      <!-- OVERLAY 1: BIOS BOOT SEQUENCE -->
+      <!-- TARJETA EMERGENTE INTUITIVA DE COMPRA DE PROPIEDAD (ESTILO MONOPOLY REAL) -->
+      <div id="emu-buy-popup" class="buy-deed-popup hidden">
+        <div class="buy-deed-card">
+          <div id="popup-deed-header" class="buy-deed-header">
+            <span id="popup-deed-group">TÍTULO DE PROPIEDAD</span>
+            <h3 id="popup-deed-name">PROPIEDAD</h3>
+          </div>
+          <div class="buy-deed-body">
+            <div class="buy-price-tag">PRECIO: <strong id="popup-deed-price">$100</strong></div>
+            <div id="popup-deed-rents" class="buy-rents-list"></div>
+            <div class="buy-deed-actions">
+              <button id="btn-popup-buy" class="emu-btn-primary" style="flex:1;padding:12px;">🏢 COMPRAR</button>
+              <button id="btn-popup-pass" class="emu-btn-secondary" style="flex:1;padding:12px;">⏭️ PASAR</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL EMERGENTE DE CARTA (CASUALIDAD / ARCA COMUNAL) -->
+      <div id="emu-card-popup" class="card-action-popup hidden">
+        <div class="card-action-box">
+          <div id="popup-card-header" class="card-action-header">
+            <span id="popup-card-badge" class="card-badge">ARCA COMUNAL</span>
+            <h3 id="popup-card-title">Título de Carta</h3>
+          </div>
+          <div class="card-action-body">
+            <div id="popup-card-icon" class="card-big-icon">📦</div>
+            <p id="popup-card-text" class="card-description-text">Descripción del efecto...</p>
+            <button id="btn-popup-card-ok" class="emu-btn-primary" style="width:100%;padding:12px;">ENTENDIDO ✔</button>
+          </div>
+        </div>
+      </div>
       <div id="emu-boot-overlay" class="emu-overlay">
         <div class="emu-modal-box">
           <h2 class="emu-modal-title">🕹️ J_ABEL RETRO EMULATOR BIOS v4.2</h2>
@@ -114,27 +145,27 @@
       </div>
     </section>
 
-    <!-- 2. CONSOLA LATERAL: JUGADORES, ACCIONES, INSPECTOR DE TÍTULO Y GAMEPAD -->
+    <!-- 2. CONSOLA LATERAL: JUGADORES, ACCIONES E INSPECTOR DE TÍTULO -->
     <aside class="emu-side-deck">
       <!-- Tarjeta de Acciones del Turno -->
-      <div class="deck-card">
+      <div class="deck-card main-turn-card">
         <div class="deck-heading">
-          <span>⚡ COMANDOS DEL JUGADOR</span>
-          <small style="color:#93c5fd;font-family:'Share Tech Mono'">STATE MACHINE</small>
+          <span>⚡ ACCIONES DE TU TURNO</span>
+          <span id="turn-badge-indicator" class="turn-badge">TURNO ACTUAL</span>
         </div>
         <div class="command-buttons-grid">
-          <button id="btn-act-roll" class="emu-btn-primary">🎲 LANZAR</button>
-          <button id="btn-act-buy" class="emu-btn-secondary" disabled>🏢 COMPRAR</button>
-          <button id="btn-act-end" class="emu-btn-secondary" disabled>⏭️ PASAR TURNO</button>
+          <button id="btn-act-roll" class="emu-btn-primary action-btn-big">🎲 LANZAR DADOS</button>
+          <button id="btn-act-buy" class="emu-btn-secondary action-btn-big" disabled>🏢 COMPRAR</button>
+          <button id="btn-act-end" class="emu-btn-secondary action-btn-big" disabled>⏭️ PASAR TURNO</button>
         </div>
-        <button id="btn-act-bail" class="emu-btn-secondary" style="width:100%;margin-top:6px;display:none;">🔓 PAGAR FIANZA CÁRCEL ($50)</button>
+        <button id="btn-act-bail" class="emu-btn-secondary" style="width:100%;margin-top:8px;display:none;">🔓 PAGAR FIANZA CÁRCEL ($50)</button>
       </div>
 
-      <!-- Estado Financiero de Jugadores -->
+      <!-- Estado Financiero de Jugadores Rediseñado -->
       <div class="deck-card">
         <div class="deck-heading">
-          <span>👥 JUGADORES EN PARTIDA</span>
-          <small style="color:#00e676;font-family:'Share Tech Mono'">LIVE SYNC</small>
+          <span>👥 JUGADORES &amp; POSICIÓN</span>
+          <small style="color:#00e676;font-family:'Share Tech Mono'">EN VIVO</small>
         </div>
         <div id="emu-players-hud" class="players-hud-grid"></div>
       </div>
@@ -142,33 +173,15 @@
       <!-- Inspector de Propiedades y Construcción de Casas -->
       <div class="deck-card">
         <div class="deck-heading">
-          <span>📜 TÍTULO DE PROPIEDAD (HAZ CLIC EN CASILLA)</span>
+          <span>📜 TÍTULO DE PROPIEDAD SELECCIONADA</span>
         </div>
         <div id="emu-deed-inspector"></div>
-      </div>
-
-      <!-- Controles Físicos del Emulador Retro -->
-      <div class="emulator-gamepad-bar">
-        <div class="dpad-cluster" title="Navegar Casillas del Tablero">
-          <button id="dpad-left" class="dpad-btn">◀</button>
-          <button id="dpad-up" class="dpad-btn">▲</button>
-          <button id="dpad-down" class="dpad-btn">▼</button>
-          <button id="dpad-right" class="dpad-btn">▶</button>
-        </div>
-        <div class="meta-cluster">
-          <button id="pad-btn-select" class="pill-pad-btn" title="Inspeccionar siguiente casilla">SELECT</button>
-          <button id="pad-btn-start" class="pill-pad-btn" title="Iniciar / Terminar Turno">START</button>
-        </div>
-        <div class="ab-cluster">
-          <button id="pad-btn-b" class="ab-btn btn-b" title="Botón B: Pasar">B</button>
-          <button id="pad-btn-a" class="ab-btn btn-a" title="Botón A: Lanzar / Comprar">A</button>
-        </div>
       </div>
 
       <!-- Bitácora de Eventos del Emulador -->
       <div class="deck-card">
         <div class="deck-heading">
-          <span>📟 BITÁCORA DEL EMULADOR</span>
+          <span>📟 BITÁCORA DEL JUEGO</span>
         </div>
         <div id="emu-game-logs" class="game-logs-box">
           <div class="log-line">🕹️ Emulador listo. Únete o crea una sala para comenzar.</div>
