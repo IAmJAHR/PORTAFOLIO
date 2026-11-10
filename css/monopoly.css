@@ -1,0 +1,592 @@
+/* =========================================================================
+   🕹️ MONOPOLY RETRO EMULATOR CSS — Consola Web + CRT + Lobby Multiplayer
+   ========================================================================= */
+:root {
+  --emu-bg: #070a12;
+  --emu-shell: #111827;
+  --emu-panel: #151f32;
+  --emu-border: #00f3ff;
+  --emu-gold: #ffd700;
+  --emu-pink: #ff007f;
+  --emu-green: #00e676;
+  --emu-text: #f1f5f9;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+
+body.emulator-body {
+  background: radial-gradient(circle at center, #111a2e 0%, #05070c 100%);
+  color: var(--emu-text);
+  font-family: 'Share Tech Mono', monospace;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* ==================== CABECERA DE CONSOLA / BIOS ==================== */
+.emu-topbar {
+  height: 54px;
+  background: linear-gradient(90deg, #0b1120 0%, #172554 50%, #0b1120 100%);
+  border-bottom: 2px solid var(--emu-border);
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  z-index: 40;
+}
+
+.emu-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.emu-back-btn {
+  background: rgba(0, 243, 255, 0.12);
+  border: 1.5px solid var(--emu-border);
+  color: var(--emu-border);
+  padding: 6px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 13px;
+  transition: 0.15s;
+}
+
+.emu-back-btn:hover {
+  background: var(--emu-border);
+  color: #090d16;
+}
+
+.rom-cartridge-badge {
+  background: rgba(255, 215, 0, 0.14);
+  border: 1px solid var(--emu-gold);
+  color: var(--emu-gold);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.emu-telemetry {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.telemetry-pill {
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(0, 243, 255, 0.35);
+  padding: 4px 9px;
+  border-radius: 4px;
+  font-size: 11.5px;
+  color: #93c5fd;
+}
+
+.emu-top-btn {
+  background: #1e293b;
+  border: 1px solid var(--emu-border);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.emu-top-btn:hover {
+  background: var(--emu-border);
+  color: #090d16;
+}
+
+/* ==================== CARCASA DEL EMULADOR ==================== */
+.emu-cabinet {
+  flex: 1;
+  max-width: 1320px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: minmax(320px, 660px) 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+/* Pantalla CRT con efecto Scanline */
+.emu-crt-screen {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-height: calc(100dvh - 84px);
+  background: #090d18;
+  border: 4px solid #334155;
+  border-radius: 16px;
+  box-shadow: 0 0 35px rgba(0, 243, 255, 0.18), inset 0 0 24px rgba(0, 0, 0, 0.85);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emu-crt-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.28) 50%);
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 15;
+}
+
+.emu-crt-screen.crt-off::after {
+  display: none;
+}
+
+#monopolyCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: pointer;
+}
+
+/* ==================== OVERLAYS DENTRO DEL EMULADOR ==================== */
+.emu-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 12, 24, 0.95);
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  backdrop-filter: blur(4px);
+}
+
+.emu-overlay.hidden {
+  display: none;
+}
+
+.emu-modal-box {
+  background: linear-gradient(180deg, #162038 0%, #0d1324 100%);
+  border: 2px solid var(--emu-border);
+  border-radius: 12px;
+  padding: 18px;
+  width: 100%;
+  max-width: 540px;
+  max-height: 95%;
+  overflow-y: auto;
+  box-shadow: 0 0 30px rgba(0, 243, 255, 0.25);
+}
+
+.emu-modal-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  color: var(--emu-gold);
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.emu-modal-sub {
+  font-size: 12.5px;
+  color: #94a3b8;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.boot-terminal {
+  font-family: 'Fira Code', monospace;
+  font-size: 13px;
+  color: var(--emu-green);
+  line-height: 1.7;
+}
+
+/* ==================== LOBBY & SALA DE ESPERA ==================== */
+.lobby-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.emu-input {
+  width: 100%;
+  background: #090e1a;
+  border: 1.5px solid #334155;
+  color: #fff;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.emu-input:focus {
+  outline: none;
+  border-color: var(--emu-border);
+}
+
+.token-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin: 8px 0 12px;
+}
+
+.token-chip {
+  background: #0d1526;
+  border: 1.5px solid #334155;
+  color: #e2e8f0;
+  border-radius: 8px;
+  padding: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.token-chip.active {
+  border-color: var(--emu-gold);
+  background: rgba(255, 215, 0, 0.15);
+  color: var(--emu-gold);
+}
+
+.t-icon {
+  font-size: 18px;
+}
+
+.lobby-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.emu-btn-primary, .emu-btn-secondary, .emu-btn-sm {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9.5px;
+  padding: 10px 12px;
+  border-radius: 7px;
+  cursor: pointer;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.emu-btn-primary {
+  background: linear-gradient(180deg, #ffd700 0%, #f59e0b 100%);
+  color: #0f172a;
+  box-shadow: 0 3px 0 #92400e;
+}
+
+.emu-btn-Primary:disabled, .emu-btn-secondary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.emu-btn-secondary {
+  background: rgba(0, 243, 255, 0.14);
+  border: 1.5px solid var(--emu-border);
+  color: var(--emu-border);
+}
+
+.emu-btn-sm {
+  background: var(--emu-border);
+  color: #090d16;
+  padding: 6px 10px;
+  font-size: 8.5px;
+}
+
+.rooms-box {
+  background: #090d18;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  padding: 8px;
+  max-height: 145px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+
+.room-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  border-bottom: 1px solid #1e293b;
+  font-size: 12px;
+}
+
+.room-code-pill {
+  background: #1e293b;
+  color: var(--emu-gold);
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-right: 6px;
+  font-weight: 700;
+}
+
+.wait-players-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.wait-player-card {
+  background: #0b1120;
+  border: 2px solid var(--emu-border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.wp-avatar {
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wp-info {
+  flex: 1;
+  margin-left: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.wp-info span {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.wp-ready {
+  color: var(--emu-green);
+  font-weight: 700;
+  font-size: 12px;
+}
+
+/* ==================== PANEL DERECHO DE CONTROL Y FINANZAS ==================== */
+.emu-side-deck {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.deck-card {
+  background: var(--emu-panel);
+  border: 1.5px solid rgba(0, 243, 255, 0.3);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.deck-heading {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: var(--emu-gold);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.players-hud-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.hud-player-card {
+  background: #0b1120;
+  border-radius: 8px;
+  padding: 8px 10px;
+  border: 1px solid #1e293b;
+}
+
+.hud-player-card.active-turn {
+  border-color: var(--emu-gold);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.25);
+}
+
+.hud-player-card.is-bankrupt {
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+
+.hp-top {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.hp-money {
+  color: var(--emu-green);
+}
+
+.hp-sub {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.jail-pill {
+  color: #f87171;
+  font-weight: 700;
+}
+
+/* Botones de Comandos del Turno */
+.command-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+/* Título de Propiedad (Deed Inspector) */
+.deed-header {
+  padding: 8px 10px;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  color: #fff;
+  text-shadow: 1px 1px 2px #000;
+  margin-bottom: 8px;
+}
+
+.deed-header span {
+  font-size: 10px;
+  opacity: 0.9;
+}
+
+.deed-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  padding: 3px 0;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+}
+
+.deed-owner {
+  margin-top: 6px;
+  font-size: 12px;
+  text-align: center;
+}
+
+/* Gamepad Físico del Emulador */
+.emulator-gamepad-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #0b1120;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #1e293b;
+}
+
+.dpad-cluster {
+  display: flex;
+  gap: 4px;
+}
+
+.dpad-btn {
+  width: 34px;
+  height: 34px;
+  background: #1e293b;
+  border: 1px solid #475569;
+  color: #e2e8f0;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.dpad-btn:active {
+  background: var(--emu-border);
+  color: #000;
+}
+
+.meta-cluster {
+  display: flex;
+  gap: 8px;
+}
+
+.pill-pad-btn {
+  background: #334155;
+  border: 1px solid #64748b;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 99px;
+  font-size: 10px;
+  font-family: 'Press Start 2P', monospace;
+  cursor: pointer;
+}
+
+.ab-cluster {
+  display: flex;
+  gap: 10px;
+}
+
+.ab-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.6);
+}
+
+.ab-btn.btn-b {
+  background: #e11d48;
+}
+
+.ab-btn.btn-a {
+  background: #2563eb;
+}
+
+.game-logs-box {
+  max-height: 115px;
+  overflow-y: auto;
+  background: #090d18;
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 11.5px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.log-line {
+  color: #cbd5e1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 2px;
+}
+
+@media (max-width: 960px) {
+  .emu-cabinet {
+    grid-template-columns: 1fr;
+  }
+  .emu-crt-screen {
+    max-height: none;
+  }
+  .rom-cartridge-badge {
+    display: none;
+  }
+}

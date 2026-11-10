@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>🕹️ Monopoly Web Emulator // Multiplayer & Sala de Espera - Juan Abel</title>
+  <link rel="icon" type="image/png" href="/image/icono.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@500;700&family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="/css/monopoly.css" />
+</head>
+<body class="emulator-body">
+  <!-- ==================== BARRA SUPERIOR DEL EMULADOR ==================== -->
+  <header class="emu-topbar">
+    <div class="emu-brand">
+      <a href="/index.html" class="emu-back-btn"><i class="fas fa-arrow-left"></i> PORTAFOLIO</a>
+      <span class="rom-cartridge-badge"><i class="fas fa-microchip"></i> ROM: MONOPOLY_CYBER_PERU_v2.4.NES</span>
+      <span id="emu-rom-status" class="telemetry-pill">MODO: LOBBY</span>
+    </div>
+
+    <div class="emu-telemetry">
+      <span class="telemetry-pill">PING: <strong id="emu-ping">14ms</strong></span>
+      <button id="btn-emu-crt" class="emu-top-btn" title="Alternar Scanlines CRT"><i class="fas fa-tv"></i> CRT</button>
+      <button id="btn-emu-audio" class="emu-top-btn" title="Audio Chiptune 8-Bit"><i class="fas fa-music"></i> 8-BIT</button>
+      <button id="btn-emu-lobby" class="emu-top-btn" title="Salas de Espera"><i class="fas fa-users"></i> SALAS</button>
+    </div>
+  </header>
+
+  <!-- ==================== GABINETE PRINCIPAL DEL EMULADOR ==================== -->
+  <main class="emu-cabinet">
+    <!-- 1. PANTALLA CRT DEL EMULADOR -->
+    <section class="emu-crt-screen">
+      <canvas id="monopolyCanvas" width="720" height="720"></canvas>
+
+      <!-- OVERLAY 1: BIOS BOOT SEQUENCE -->
+      <div id="emu-boot-overlay" class="emu-overlay">
+        <div class="emu-modal-box">
+          <h2 class="emu-modal-title">🕹️ J_ABEL RETRO EMULATOR BIOS v4.2</h2>
+          <div class="boot-terminal">
+            <p>&gt; MOUNTING CARTRIDGE: MONOPOLY_MULTIPLAYER_EDITION.ROM... OK</p>
+            <p>&gt; INITIALIZING DESIGN PATTERNS: [STATE, COMMAND, OBSERVER, FACTORY, STRATEGY]... OK</p>
+            <p>&gt; ALLOCATING VRAM &amp; 8-BIT CHIPTUNE DSP... OK</p>
+            <p>&gt; CONNECTING MULTIPLAYER WAITING ROOM SERVER... READY!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- OVERLAY 2: LOBBY & BUSCADOR DE SALAS DE ESPERA -->
+      <div id="emu-lobby-overlay" class="emu-overlay hidden">
+        <div class="emu-modal-box">
+          <h1 class="emu-modal-title">🎲 MONOPOLY // MULTIPLAYER LOBBY</h1>
+          <p class="emu-modal-sub">Configura tu ficha, crea una Sala de Espera o únete con tus amigos en tiempo real</p>
+
+          <div class="lobby-form-row">
+            <div>
+              <label style="font-size:11px;color:#93c5fd;">TU ALIAS DE JUGADOR:</label>
+              <input id="emu-player-name" type="text" class="emu-input" maxlength="18" placeholder="Ej: Abel_Dev" />
+            </div>
+            <div>
+              <label style="font-size:11px;color:#93c5fd;">NOMBRE DE SALA NUEVA:</label>
+              <input id="emu-room-name" type="text" class="emu-input" maxlength="28" placeholder="Ej: Imperio Cyber Perú" />
+            </div>
+          </div>
+
+          <label style="font-size:11px;color:#93c5fd;">ELIGE TU FICHA DEL EMULADOR:</label>
+          <div id="emu-token-selector" class="token-selector"></div>
+
+          <div class="lobby-actions">
+            <button id="btn-create-room" class="emu-btn-primary" style="flex:1;">➕ CREAR SALA DE ESPERA</button>
+            <button id="btn-quick-play" class="emu-btn-secondary" style="flex:1;">⚡ PARTIDA RÁPIDA (+BOT)</button>
+          </div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <span style="font-size:11.5px;color:#ffd700;">📡 SALAS DE ESPERA EN VIVO:</span>
+            <button id="btn-refresh-rooms" class="emu-top-btn" style="font-size:11px;padding:2px 8px;">↻ ACTUALIZAR</button>
+          </div>
+          <div id="emu-rooms-list" class="rooms-box"></div>
+
+          <div style="display:flex;gap:6px;">
+            <input id="emu-join-code" type="text" class="emu-input" placeholder="Código de sala (Ej: MNP-A1B2)" style="text-transform:uppercase;" />
+            <button id="btn-join-code" class="emu-btn-secondary">ENTRAR POR CÓDIGO</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- OVERLAY 3: SALA DE ESPERA (WAITING ROOM MULTIPLAYER) -->
+      <div id="emu-waiting-overlay" class="emu-overlay hidden">
+        <div class="emu-modal-box">
+          <div style="text-align:center;margin-bottom:6px;">
+            <span class="rom-cartridge-badge">CÓDIGO DE SALA: <strong id="wait-room-code">MNP-0000</strong></span>
+          </div>
+          <h2 id="wait-room-title" class="emu-modal-title">SALA DE ESPERA</h2>
+          <p class="emu-modal-sub">Comparte el código o abre otra pestaña/dispositivo para unirte a la sala</p>
+
+          <div id="wait-players-list" class="wait-players-grid"></div>
+
+          <div class="lobby-actions" style="margin-top:12px;">
+            <button id="btn-add-bot" class="emu-btn-secondary">🤖 +AGREGAR BOT IA</button>
+            <button id="btn-start-match" class="emu-btn-primary" style="flex:1;">▶ INICIAR PARTIDA</button>
+          </div>
+          <button id="btn-leave-waiting" class="emu-top-btn" style="width:100%;">⬅ SALIR DE LA SALA</button>
+        </div>
+      </div>
+
+      <!-- OVERLAY 4: PANTALLA DE CAMPEÓN -->
+      <div id="emu-winner-overlay" class="emu-overlay hidden">
+        <div class="emu-modal-box" style="text-align:center;">
+          <h2 class="emu-modal-title">🏆 ¡FIN DE LA PARTIDA! 🏆</h2>
+          <p id="winner-title" style="font-size:16px;color:#00e676;margin:14px 0;"></p>
+          <button id="btn-winner-lobby" class="emu-btn-primary">🏠 VOLVER AL LOBBY MULTIPLAYER</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. CONSOLA LATERAL: JUGADORES, ACCIONES, INSPECTOR DE TÍTULO Y GAMEPAD -->
+    <aside class="emu-side-deck">
+      <!-- Tarjeta de Acciones del Turno -->
+      <div class="deck-card">
+        <div class="deck-heading">
+          <span>⚡ COMANDOS DEL JUGADOR</span>
+          <small style="color:#93c5fd;font-family:'Share Tech Mono'">STATE MACHINE</small>
+        </div>
+        <div class="command-buttons-grid">
+          <button id="btn-act-roll" class="emu-btn-primary">🎲 LANZAR</button>
+          <button id="btn-act-buy" class="emu-btn-secondary" disabled>🏢 COMPRAR</button>
+          <button id="btn-act-end" class="emu-btn-secondary" disabled>⏭️ PASAR TURNO</button>
+        </div>
+        <button id="btn-act-bail" class="emu-btn-secondary" style="width:100%;margin-top:6px;display:none;">🔓 PAGAR FIANZA CÁRCEL ($50)</button>
+      </div>
+
+      <!-- Estado Financiero de Jugadores -->
+      <div class="deck-card">
+        <div class="deck-heading">
+          <span>👥 JUGADORES EN PARTIDA</span>
+          <small style="color:#00e676;font-family:'Share Tech Mono'">LIVE SYNC</small>
+        </div>
+        <div id="emu-players-hud" class="players-hud-grid"></div>
+      </div>
+
+      <!-- Inspector de Propiedades y Construcción de Casas -->
+      <div class="deck-card">
+        <div class="deck-heading">
+          <span>📜 TÍTULO DE PROPIEDAD (HAZ CLIC EN CASILLA)</span>
+        </div>
+        <div id="emu-deed-inspector"></div>
+      </div>
+
+      <!-- Controles Físicos del Emulador Retro -->
+      <div class="emulator-gamepad-bar">
+        <div class="dpad-cluster" title="Navegar Casillas del Tablero">
+          <button id="dpad-left" class="dpad-btn">◀</button>
+          <button id="dpad-up" class="dpad-btn">▲</button>
+          <button id="dpad-down" class="dpad-btn">▼</button>
+          <button id="dpad-right" class="dpad-btn">▶</button>
+        </div>
+        <div class="meta-cluster">
+          <button id="pad-btn-select" class="pill-pad-btn" title="Inspeccionar siguiente casilla">SELECT</button>
+          <button id="pad-btn-start" class="pill-pad-btn" title="Iniciar / Terminar Turno">START</button>
+        </div>
+        <div class="ab-cluster">
+          <button id="pad-btn-b" class="ab-btn btn-b" title="Botón B: Pasar">B</button>
+          <button id="pad-btn-a" class="ab-btn btn-a" title="Botón A: Lanzar / Comprar">A</button>
+        </div>
+      </div>
+
+      <!-- Bitácora de Eventos del Emulador -->
+      <div class="deck-card">
+        <div class="deck-heading">
+          <span>📟 BITÁCORA DEL EMULADOR</span>
+        </div>
+        <div id="emu-game-logs" class="game-logs-box">
+          <div class="log-line">🕹️ Emulador listo. Únete o crea una sala para comenzar.</div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Módulos de Arquitectura de Software (Patrones GoF & Enterprise) -->
+  <script src="/dist/js/monopoly/board-config.js"></script>
+  <script src="/dist/js/monopoly/emulator-audio.js"></script>
+  <script src="/dist/js/monopoly/game-engine.js"></script>
+  <script src="/dist/js/monopoly/network-sync.js"></script>
+  <script src="/dist/js/monopoly/canvas-renderer.js"></script>
+  <script src="/dist/js/monopoly/emulator-ui.js"></script>
+</body>
+</html>

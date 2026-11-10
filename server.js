@@ -188,6 +188,9 @@ app.get('/api/health', async (req, res) => {
 // 4. Módulo de Chat Cifrado WebSockets / REST
 app.use('/api/chat', require('./routes/chat')(pool, ensureTable));
 
+// 5. Módulo de Emulador Multiplayer Monopoly (Salas de Espera & Sincronización)
+app.use('/api/monopoly', require('./routes/monopoly')(pool, ensureTable));
+
 // --- SERVICIO DE ARCHIVOS ESTÁTICOS ---
 express.static.mime.define({
   'application/xml': ['dae'],
@@ -217,9 +220,12 @@ app.get(['/mototaxi', '/mototaxi/', '/mototaxi.html/'], (req, res) => {
 app.get(['/michi', '/michi/', '/michi.html', '/michi.html/'], (req, res) => {
   res.sendFile(path.join(__dirname, 'michi', 'index.html'));
 });
+app.get(['/monopoly', '/monopoly/', '/monopoly.html', '/monopoly.html/'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'monopoly.html'));
+});
 
 // Rescate de páginas y assets estáticos si se acceden desde una subruta con barra final
-app.get(/^\/.+\/(chat|game|mototaxi|michi|index)(\.html)?\/?$/, (req, res) => {
+app.get(/^\/.+\/(chat|game|mototaxi|michi|monopoly|index)(\.html)?\/?$/, (req, res) => {
   res.redirect(301, `/${req.params[0]}.html`);
 });
 app.get(/^\/.+\/(css|dist|image|modelos|michi)\/(.+)$/, (req, res) => {

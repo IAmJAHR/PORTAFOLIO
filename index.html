@@ -125,6 +125,7 @@
                 <div class="terminal-chips">
                     <button class="chip-btn" data-cmd="skills"><i class="fas fa-code"></i> skills</button>
                     <button class="chip-btn" data-cmd="projects"><i class="fas fa-folder-open"></i> projects</button>
+                    <button class="chip-btn" data-cmd="monopoly"><i class="fas fa-dice"></i> monopoly</button>
                     <button class="chip-btn" data-cmd="michi"><i class="fas fa-paw"></i> michi</button>
                     <button class="chip-btn" data-cmd="sap"><i class="fas fa-cubes"></i> sap</button>
                     <button class="chip-btn" data-cmd="contact"><i class="fas fa-paper-plane"></i> contact</button>
@@ -324,6 +325,41 @@
             <p class="section-subtitle" data-aos="fade-right">Desarrollos en vivo, simuladores interactivos y arquitecturas de software probadas.</p>
 
             <div class="projects-grid">
+
+                <!-- Project: Monopoly Web Emulator Multiplayer -->
+                <div class="cyber-card featured-card" data-aos="fade-up" data-aos-delay="25">
+                    <div class="card-image">
+                        <img src="https://images.unsplash.com/photo-1611996575749-79a3a250f948?auto=format&fit=crop&w=700&q=80" alt="Monopoly Retro Emulator Multiplayer">
+                        <div class="overlay-tech live-badge">
+                            <span class="pulse-beacon"></span> <span>MULTIPLAYER &bull; SALA DE ESPERA</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-meta">
+                            <span class="card-category"><i class="fas fa-dice"></i> WEB EMULATOR &amp; CLEAN ARCH</span>
+                            <span class="card-version">ROM v2.4</span>
+                        </div>
+                        <h3>[ MONOPOLY_RETRO_EMULATOR ]</h3>
+                        <p class="card-desc">
+                            Emulador web retro de <strong>Monopoly Multiplayer</strong> con <strong>Sala de Espera en tiempo real</strong>, códigos de sala, IA Bots y audio Chiptune 8-bit. Diseñado con patrones <strong>State Machine, Command, Observer, Strategy, Factory y Repository</strong>.
+                        </p>
+                        <div class="card-tags">
+                            <span>Multiplayer Lobby</span>
+                            <span>Design Patterns</span>
+                            <span>HTML5 Canvas</span>
+                            <span>PostgreSQL Sync</span>
+                            <span>Web Audio 8-Bit</span>
+                        </div>
+                        <div class="card-buttons">
+                            <a href="/monopoly.html" class="cyber-btn cyber-btn-primary">
+                                <i class="fas fa-gamepad"></i> ABRIR EMULADOR
+                            </a>
+                            <a href="https://github.com/IAmJAHR/PORTAFOLIO" target="_blank" rel="noopener" class="cyber-btn cyber-btn-outline" title="Ver repositorio">
+                                <i class="fab fa-github"></i> CÓDIGO
+                            </a>
+                        </div>
+                    </div>
+                </div>
                 
                 <!-- Project 0: Super Michi Bros -->
                 <div class="cyber-card featured-card" data-aos="fade-up" data-aos-delay="50">
@@ -840,15 +876,16 @@
         const termInput = document.getElementById('term-input');
 
         const commands = {
-            help: 'Comandos disponibles: [skills, projects, sap, contact, whoami, clear, game, mototaxi, michi]',
+            help: 'Comandos disponibles: [skills, projects, sap, contact, whoami, clear, monopoly, michi, game, mototaxi]',
             skills: 'Tecnologías: Node.js, C#, PHP, SAP B1 (DI-API/HANA), Three.js WebGL, Firebase, SQL Server, Puppeteer.',
-            projects: 'Proyectos activos: 1. Super Michi Bros (2D) | 2. API SUNAT (Online) | 3. Mototaxi 3D (WebGL) | 4. Arcade Tetris | 5. SAP Connector.',
+            projects: 'Proyectos activos: 1. Monopoly Emulator (Multiplayer) | 2. Super Michi Bros (2D) | 3. API SUNAT | 4. Mototaxi 3D | 5. Arcade Tetris.',
             sap: 'SAP Business One: Especialista en DI-API, Service Layer, HANA Database, integración de facturación electrónica y migración.',
             contact: 'Contacto: juandavidhr11@gmail.com | WhatsApp disponible en la sección de contacto.',
             whoami: 'Juan Abel Huaman Rafael - Desarrollador Full-Stack, Arquitecto SAP B1 y Creador WebGL.',
             game: 'Iniciando Arcade Tetris... Navegando a game.html...',
             mototaxi: 'Iniciando Simulador Mototaxi 3D... Navegando a mototaxi.html...',
             michi: 'Iniciando Super Michi Bros... Navegando a michi.html...',
+            monopoly: 'Cargando ROM Monopoly Multiplayer Emulator... Navegando a monopoly.html...',
             clear: ''
         };
 
@@ -878,6 +915,9 @@
             } else if (cmd === 'michi') {
                 addTermLine(commands.michi);
                 setTimeout(() => window.location.href = 'michi.html', 1000);
+            } else if (cmd === 'monopoly') {
+                addTermLine(commands.monopoly);
+                setTimeout(() => window.location.href = 'monopoly.html', 1000);
             } else if (commands[cmd]) {
                 addTermLine(commands[cmd]);
             } else {
