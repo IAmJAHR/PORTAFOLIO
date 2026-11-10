@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#100c22" />
+  <title>Super Michi Bros. — Edición Móvil & PC 🐾🤍</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="/image/icono.png">
+  <link rel="stylesheet" href="/michi/style.css" />
+</head>
+<body>
+  <div id="app-shell">
+    <!-- ==================== BARRA SUPERIOR INDEPENDIENTE ==================== -->
+    <header id="top-bar">
+      <div class="hud-stats">
+        <a href="/index.html" class="bar-btn" title="Volver al Portafolio" style="text-decoration:none;">⬅ SALIR</a>
+        <div class="stat-box">
+          <span class="stat-label">MICHI</span>
+          <span id="hud-score" class="stat-value">000000</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">MONEDAS</span>
+          <span id="hud-coins" class="stat-value">🐾 00</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">CARTELES</span>
+          <span id="hud-memories" class="stat-value">⭐ 0/3</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">MUNDO</span>
+          <span id="hud-world" class="stat-value">1-1</span>
+        </div>
+      </div>
+
+      <div class="hud-controls">
+        <button id="btn-autorun" class="bar-btn" title="Activar Auto-Correr para jugar con 1 sola mano en celular">🏃‍♀️ Auto: OFF</button>
+        <button id="btn-fullscreen" class="bar-btn" title="Pantalla Completa">⛶</button>
+        <button id="btn-music" class="bar-btn" title="Activar/Silenciar Música">🎵</button>
+        <button id="btn-pause" class="bar-btn pause-highlight" title="Pausar Juego">⏸ PAUSA</button>
+      </div>
+    </header>
+
+    <!-- ==================== ESCENARIO CENTRAL 2D ==================== -->
+    <main id="stage-area">
+      <canvas id="gameCanvas" width="960" height="500"></canvas>
+
+      <!-- ==================== INTRO CINEMÁTICA DE CUERPO COMPLETO ==================== -->
+      <div id="intro-overlay" class="overlay-screen">
+        <div class="cinema-container">
+          <div class="cinema-top-bar">✨ HISTORIA DE UN AMOR ETERNO — CUERPO COMPLETO ✨</div>
+
+          <div class="cinema-stage">
+            <div class="cinema-visual-group">
+              <div class="full-photo-card">
+                <img id="intro-slide-img" src="/michi/muchi_cape.jpg" alt="Michi Cuerpo Completo" />
+                <span id="intro-img-caption" class="photo-tag">Michi de Cuerpo Completo</span>
+              </div>
+              <div class="live-2d-card">
+                <canvas id="introMichiCanvas" width="160" height="185"></canvas>
+                <span class="photo-tag">Michi 2D en Vivo</span>
+              </div>
+            </div>
+
+            <div class="cinema-story">
+              <div id="intro-chapter" class="cinema-chapter">CAPÍTULO 1 / 4</div>
+              <h2 id="intro-title" class="cinema-title">Había una vez una gatita única llamada Michi...</h2>
+              <p id="intro-text" class="cinema-text"></p>
+            </div>
+          </div>
+
+          <div class="cinema-dots">
+            <span class="dot active" data-slide="0"></span>
+            <span class="dot" data-slide="1"></span>
+            <span class="dot" data-slide="2"></span>
+            <span class="dot" data-slide="3"></span>
+          </div>
+
+          <div class="cinema-controls">
+            <button id="intro-prev-btn" class="secondary-btn">◀ ANTERIOR</button>
+            <button id="intro-next-btn" class="primary-btn">SIGUIENTE ▶</button>
+            <button id="intro-skip-btn" class="secondary-btn">IR AL MENÚ ⏭</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== MENÚ PRINCIPAL ==================== -->
+      <div id="title-screen" class="overlay-screen hidden">
+        <div class="title-card">
+          <div class="dedication-badge">✨ UN JUEGO TRIBUTO EN MEMORIA DE MICHI ✨</div>
+          <h1 class="game-title">SUPER MICHI BROS.</h1>
+          <p class="game-subtitle">Edición Cuerpo Completo — Su Pechito Blanco y su Capa Mágica</p>
+
+          <div class="fullbody-showcase-row">
+            <div class="fullbody-card">
+              <img id="title-img-1" src="/michi/muchi_cape.jpg" alt="Michi Guerrera Cuerpo Completo" />
+              <span>🦸‍♀️ Michi Capa Mágica</span>
+            </div>
+            <div class="fullbody-card live-center-card">
+              <canvas id="titleMichiCanvas" width="150" height="150"></canvas>
+              <span>🤍 Pechito Blanco 2D</span>
+            </div>
+            <div class="fullbody-card">
+              <img id="title-img-2" src="/michi/muchi_real.jpg" alt="Michi Real" />
+              <span>🐾 Nuestra Michi Real</span>
+            </div>
+          </div>
+
+          <blockquote class="intro-quote">
+            "Aunque ya no esté físicamente entre tus manos, mírame de cuerpo entero corriendo y saltando contigo: con mi pechito blanco, mis 4 calcetines blancos y mi guiño 😉. <strong>Sigue adelante, porque mi amor camina a tu lado</strong>."
+          </blockquote>
+
+          <div class="menu-grid">
+            <button id="start-btn" class="primary-btn">▶ JUGAR AVENTURA</button>
+            <button id="start-autorun-btn" class="secondary-btn">📱 MODO FÁCIL 1 MANO (AUTO-CORRER)</button>
+            <button id="worldmap-btn" class="secondary-btn">🗺️ 4 MUNDOS</button>
+            <button id="gallery-btn" class="secondary-btn">😉 POSES 2D</button>
+            <button id="album-btn" class="secondary-btn">🖼️ ÁLBUM DE FOTOS</button>
+            <button id="memories-btn" class="secondary-btn">💌 MENSAJES</button>
+            <button id="rewatch-intro-btn" class="secondary-btn">🎬 VER INTRO</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== ÁLBUM DE FOTOS DE CUERPO COMPLETO ==================== -->
+      <div id="album-modal" class="overlay-screen hidden">
+        <div class="modal-card wide-modal">
+          <h2>🖼️ Álbum de Cuerpo Completo de Michi</h2>
+          <p class="modal-sub">Todas las fotografías e ilustraciones de cuerpo entero de Michi sin recortes:</p>
+          <div class="album-grid">
+            <div class="album-item">
+              <img src="/michi/muchi_cape.jpg" alt="Michi con su Capa Mágica" />
+              <div class="album-caption"><strong>Michi Guerrera de Luz</strong> — Con su capa negra de bordes rojos, broche dorado, pechito blanco y sus 4 patitas blancas.</div>
+            </div>
+            <div class="album-item">
+              <img src="/michi/muchi_real.jpg" alt="Michi Real" />
+              <div class="album-caption"><strong>Michi en tus Manos</strong> — Su mirada esmeralda, la manchita negra en su naricita rosada y su pecho blanquito.</div>
+            </div>
+            <div class="album-item">
+              <img id="album-gen-1" src="/michi/muchi_full_meadow.png" onerror="this.src='/michi/muchi_cape.jpg'" alt="Michi en la Pradera" />
+              <div class="album-caption"><strong>Michi en la Pradera 1-1</strong> — Cuerpo completo mostrando su pechito blanco bajo el sol.</div>
+            </div>
+            <div class="album-item">
+              <img id="album-gen-2" src="/michi/muchi_full_hero.png" onerror="this.src='/michi/muchi_cape.jpg'" alt="Michi Héroe" />
+              <div class="album-caption"><strong>Michi Guardiana del Atardecer</strong> — Cuerpo entero con su capa mágica sobre las nubes doradas.</div>
+            </div>
+            <div class="album-item">
+              <img id="album-gen-3" src="/michi/muchi_full_starlight.png" onerror="this.src='/michi/muchi_real.jpg'" alt="Michi Estelar" />
+              <div class="album-caption"><strong>Michi en el Puente Estelar</strong> — Cuidando tus pasos desde las estrellas para que sigas adelante.</div>
+            </div>
+          </div>
+          <button id="close-album-btn" class="primary-btn">⬅ Volver al Menú Principal</button>
+        </div>
+      </div>
+
+      <!-- ==================== MAPA DE SELECCIÓN DE NIVELES (4 MUNDOS) ==================== -->
+      <div id="level-select-modal" class="overlay-screen hidden">
+        <div class="modal-card wide-modal">
+          <h2>🗺️ SELECCIONA UN MUNDO DE SUPER MICHI BROS.</h2>
+          <p class="modal-sub">Recorre las 4 etapas junto a Michi:</p>
+          <div class="levels-grid">
+            <div class="level-card" data-level="0">
+              <div class="level-badge">MUNDO 1-1</div>
+              <h3>🌿 Pradera de las Caricias</h3>
+              <p>Día soleado estilo Super Mario donde Michi corre de cuerpo entero mostrando su pechito blanco.</p>
+              <span class="level-play-tag">▶ JUGAR NIVEL 1</span>
+            </div>
+            <div class="level-card" data-level="1">
+              <div class="level-badge">MUNDO 1-2</div>
+              <h3>🌅 Atardecer de los Guiños</h3>
+              <p>Cielo dorado sobre puentes y nubes altas. Cada salto de Michi ilumina la tarde.</p>
+              <span class="level-play-tag">▶ JUGAR NIVEL 2</span>
+            </div>
+            <div class="level-card" data-level="2">
+              <div class="level-badge">MUNDO 1-3</div>
+              <h3>🌌 Noche de la Capa Mágica</h3>
+              <p>Bajo las estrellas, la capa con broche de oro de Michi disipa las sombras de la tristeza.</p>
+              <span class="level-play-tag">▶ JUGAR NIVEL 3</span>
+            </div>
+            <div class="level-card" data-level="3">
+              <div class="level-badge">MUNDO 1-4</div>
+              <h3>🌈 Puente Estelar de Michi</h3>
+              <p>El ascenso final hacia el Altar Celestial donde Michi te entrega su carta para seguir adelante.</p>
+              <span class="level-play-tag">▶ JUGAR NIVEL 4</span>
+            </div>
+          </div>
+          <button id="close-levels-btn" class="secondary-btn">⬅ Volver al Menú Principal</button>
+        </div>
+      </div>
+
+      <!-- ==================== TRANSICIÓN ENTRE NIVELES ==================== -->
+      <div id="stage-clear-modal" class="overlay-screen hidden">
+        <div class="modal-card">
+          <div class="dedication-badge">🌟 ¡MUNDO COMPLETADO CON AMOR! 🌟</div>
+          <h2 id="stage-clear-title">¡Michi cruzó el Mundo 1-1!</h2>
+          <p id="stage-clear-quote" class="intro-quote"></p>
+          <div class="title-buttons">
+            <button id="next-level-btn" class="primary-btn">▶ SIGUIENTE NIVEL</button>
+            <button id="stage-menu-btn" class="secondary-btn">🏠 MENÚ PRINCIPAL</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== MENÚ DE PAUSA ==================== -->
+      <div id="pause-modal" class="overlay-screen hidden">
+        <div class="modal-card">
+          <h2>⏸ JUEGO EN PAUSA</h2>
+          <p class="modal-sub">Michi está descansando de cuerpo completo y acicalando su pechito blanco 🤍</p>
+          <canvas id="pauseMichiCanvas" width="220" height="145"></canvas>
+          <div class="controls-preview">
+            <span><b>📱 En Celular:</b> Usa los botones grandes de abajo o toca la pantalla para saltar</span>
+            <span><b>💻 En PC:</b> Flechas / WASD + Espacio + P (Guiño) + C (Miau)</span>
+          </div>
+          <div class="menu-grid">
+            <button id="resume-btn" class="primary-btn">▶ CONTINUAR JUGANDO</button>
+            <button id="restart-level-btn" class="secondary-btn">🔄 REINICIAR NIVEL</button>
+            <button id="pause-levels-btn" class="secondary-btn">🗺️ CAMBIAR DE MUNDO</button>
+            <button id="pause-album-btn" class="secondary-btn">🖼️ FOTOS DE MICHI</button>
+            <button id="pause-home-btn" class="secondary-btn">🏠 MENÚ PRINCIPAL</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== ESTUDIO 2D DE POSES DE CUERPO COMPLETO ==================== -->
+      <div id="pose-modal" class="overlay-screen hidden">
+        <div class="modal-card">
+          <h2>✨ Estudio de Cuerpo Completo de Michi ✨</h2>
+          <p class="modal-sub">Mira a Michi de cuerpo entero: orejitas, ojos esmeralda, manchita en la nariz, capa con toro rojo, pechito blanco, 4 calcetines blancos y cola calicó:</p>
+          <canvas id="poseShowcaseCanvas" width="440" height="220"></canvas>
+          <div class="pose-selector">
+            <button class="pose-chip active" data-pose="wink">😉 Guiño Completo</button>
+            <button class="pose-chip" data-pose="belly">🤍 Mostrar Pechito Blanco</button>
+            <button class="pose-chip" data-pose="hero">🦸‍♀️ Capa Heroica</button>
+            <button class="pose-chip" data-pose="groom">🐾 Acicalándose</button>
+            <button class="pose-chip" data-pose="stretch">🐈 Estiramiento</button>
+            <button class="pose-chip" data-pose="run">🏃‍♀️ Galope Calicó</button>
+            <button class="pose-chip" data-pose="jump">🚀 Súper Salto</button>
+          </div>
+          <button id="close-pose-modal" class="primary-btn">⬅ Volver al Menú</button>
+        </div>
+      </div>
+
+      <!-- ==================== BAÚL DE RECUERDOS Y MENSAJES ==================== -->
+      <div id="memories-modal" class="overlay-screen hidden">
+        <div class="modal-card wide-modal">
+          <h2>💌 Baúl de Mensajes de Michi para Seguir Adelante</h2>
+          <p class="modal-sub">Todos los mensajes que Michi te dice en los carteles del camino:</p>
+          <div id="memories-list" class="memories-scroll"></div>
+          <button id="close-memories-btn" class="primary-btn">⬅ Volver al Menú</button>
+        </div>
+      </div>
+
+      <!-- ==================== CARTA TRIBUTO FINAL (ALTAR CELESTIAL) ==================== -->
+      <div id="tribute-screen" class="overlay-screen hidden">
+        <div class="tribute-card">
+          <div class="tribute-header">🌈 CARTA ETERNA DE MICHI PARA TI 🌈</div>
+          <div class="tribute-portraits-full">
+            <img src="/michi/muchi_cape.jpg" alt="Michi Cuerpo Completo Capa" class="tribute-photo-full" />
+            <img src="/michi/muchi_real.jpg" alt="Michi Real" class="tribute-photo-full" />
+            <img src="/michi/muchi_full_starlight.png" onerror="this.style.display='none'" alt="Michi Estelar" class="tribute-photo-full" />
+          </div>
+          <div class="tribute-letter">
+            <p>Hola, mi humano favorito...</p>
+            <p>Si llegaste hasta aquí es porque recorriste nuestros 4 mundos de recuerdos y transformaste las sombras de la tristeza en flores. Sé que a veces duele mirar el rincón donde solía estar o extrañar acariciar mi <strong>pechito blanco</strong> y mis cuatro patitas suaves.</p>
+            <p>Pero mírame ahora de cuerpo entero: llevo mi capa mágica, mis ojos verdes brillan entre las estrellas y ya nada me duele. Cada vez que sientas una brisa suave o veas un rayito de sol en tu ventana, soy yo haciéndote un <strong>guiño 😉</strong> y ronroneando desde el cielo.</p>
+            <p class="highlight-quote">✨ "No te detengas. Sonríe, cumple tus sueños y sigue adelante. Yo siempre seré tu Michi guardiana." ✨</p>
+          </div>
+          <div class="tribute-stats" id="tribute-stats"></div>
+          <div class="title-buttons">
+            <button id="replay-btn" class="primary-btn">🔄 VOLVER A JUGAR</button>
+            <button id="tribute-menu-btn" class="secondary-btn">🏠 MENÚ PRINCIPAL</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ==================== GAMEPAD TÁCTIL ERGONÓMICO INFERIOR (CELULAR Y PC) ==================== -->
+    <footer id="bottom-bar">
+      <!-- Cruceta Izquierda (Pasa el dedo de Izquierda a Derecha sin levantar el pulgar) -->
+      <div class="dpad-touch-zone" id="dpad-zone">
+        <button id="t-left" class="pad-btn dir-btn" aria-label="Izquierda">◀</button>
+        <button id="t-down" class="pad-btn crouch-btn" aria-label="Sentarse y Ronronear">▼<span>Prrrr</span></button>
+        <button id="t-right" class="pad-btn dir-btn" aria-label="Derecha">▶</button>
+      </div>
+
+      <!-- Indicador Central (Se oculta en pantallas pequeñas de celular para dar más espacio a los pulgares) -->
+      <div class="hint-center">
+        <span>📱 <b>En Celular:</b> Toca el escenario para saltar o usa los botones grandes • <b>🏃‍♀️ Auto</b> corre sola</span>
+      </div>
+
+      <!-- Botones de Acción Derecha (Salto Gigante + Guiño + Maullido/Ronroneo) -->
+      <div class="action-touch-zone">
+        <button id="t-pose" class="pad-btn special-btn gold" aria-label="Guiño y Pose">😉<span>Guiño</span></button>
+        <button id="t-meow" class="pad-btn special-btn pink" aria-label="Maullar y Ronronear">🐾<span>Miau</span></button>
+        <button id="t-jump" class="pad-btn jump-giant-btn" aria-label="Saltar">▲<span>SALTAR</span></button>
+      </div>
+    </footer>
+  </div>
+
+  <script src="/michi/game.js"></script>
+</body>
+</html>

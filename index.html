@@ -125,6 +125,7 @@
                 <div class="terminal-chips">
                     <button class="chip-btn" data-cmd="skills"><i class="fas fa-code"></i> skills</button>
                     <button class="chip-btn" data-cmd="projects"><i class="fas fa-folder-open"></i> projects</button>
+                    <button class="chip-btn" data-cmd="michi"><i class="fas fa-paw"></i> michi</button>
                     <button class="chip-btn" data-cmd="sap"><i class="fas fa-cubes"></i> sap</button>
                     <button class="chip-btn" data-cmd="contact"><i class="fas fa-paper-plane"></i> contact</button>
                     <button class="chip-btn" data-cmd="clear"><i class="fas fa-eraser"></i> clear</button>
@@ -324,6 +325,41 @@
 
             <div class="projects-grid">
                 
+                <!-- Project 0: Super Michi Bros -->
+                <div class="cyber-card featured-card" data-aos="fade-up" data-aos-delay="50">
+                    <div class="card-image">
+                        <img src="/michi/muchi_full_meadow.png" alt="Super Michi Bros">
+                        <div class="overlay-tech live-badge">
+                            <span class="pulse-beacon"></span> <span>AVENTURA 2D ACTIVA</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-meta">
+                            <span class="card-category"><i class="fas fa-paw"></i> HTML5 CANVAS &amp; WEB AUDIO</span>
+                            <span class="card-version">PC &amp; MOBILE</span>
+                        </div>
+                        <h3>[ SUPER_MICHI_BROS ]</h3>
+                        <p class="card-desc">
+                            Videojuego de plataformas 2D tributo a <strong>Michi</strong> con 4 mundos, intro cinemática, estudio de poses 2D de cuerpo completo, sintetizador de música y ronroneos en <strong>Web Audio API</strong>, y controles táctiles con modo Auto-Correr para móvil.
+                        </p>
+                        <div class="card-tags">
+                            <span>HTML5 Canvas</span>
+                            <span>2D Physics</span>
+                            <span>Web Audio API</span>
+                            <span>Mobile Touch</span>
+                            <span>Auto-Run</span>
+                        </div>
+                        <div class="card-buttons">
+                            <a href="/michi.html" class="cyber-btn cyber-btn-primary">
+                                <i class="fas fa-play"></i> JUGAR AVENTURA
+                            </a>
+                            <a href="https://github.com/IAmJAHR/PORTAFOLIO" target="_blank" rel="noopener" class="cyber-btn cyber-btn-outline" title="Ver repositorio">
+                                <i class="fab fa-github"></i> CÓDIGO
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Project 1: Mototaxi 3D -->
                 <div class="cyber-card featured-card" data-aos="fade-up" data-aos-delay="100">
                     <div class="card-image">
@@ -804,14 +840,15 @@
         const termInput = document.getElementById('term-input');
 
         const commands = {
-            help: 'Comandos disponibles: [skills, projects, sap, contact, whoami, clear, game, mototaxi]',
+            help: 'Comandos disponibles: [skills, projects, sap, contact, whoami, clear, game, mototaxi, michi]',
             skills: 'Tecnologías: Node.js, C#, PHP, SAP B1 (DI-API/HANA), Three.js WebGL, Firebase, SQL Server, Puppeteer.',
-            projects: 'Proyectos activos: 1. API SUNAT (Online) | 2. Mototaxi 3D (WebGL) | 3. Arcade Tetris | 4. SAP Connector.',
+            projects: 'Proyectos activos: 1. Super Michi Bros (2D) | 2. API SUNAT (Online) | 3. Mototaxi 3D (WebGL) | 4. Arcade Tetris | 5. SAP Connector.',
             sap: 'SAP Business One: Especialista en DI-API, Service Layer, HANA Database, integración de facturación electrónica y migración.',
             contact: 'Contacto: juandavidhr11@gmail.com | WhatsApp disponible en la sección de contacto.',
             whoami: 'Juan Abel Huaman Rafael - Desarrollador Full-Stack, Arquitecto SAP B1 y Creador WebGL.',
             game: 'Iniciando Arcade Tetris... Navegando a game.html...',
             mototaxi: 'Iniciando Simulador Mototaxi 3D... Navegando a mototaxi.html...',
+            michi: 'Iniciando Super Michi Bros... Navegando a michi.html...',
             clear: ''
         };
 
@@ -838,6 +875,9 @@
             } else if (cmd === 'mototaxi') {
                 addTermLine(commands.mototaxi);
                 setTimeout(() => window.location.href = 'mototaxi.html', 1000);
+            } else if (cmd === 'michi') {
+                addTermLine(commands.michi);
+                setTimeout(() => window.location.href = 'michi.html', 1000);
             } else if (commands[cmd]) {
                 addTermLine(commands[cmd]);
             } else {

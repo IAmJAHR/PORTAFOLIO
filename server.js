@@ -214,12 +214,15 @@ app.get(['/game', '/game/', '/game.html/'], (req, res) => {
 app.get(['/mototaxi', '/mototaxi/', '/mototaxi.html/'], (req, res) => {
   res.sendFile(path.join(__dirname, 'mototaxi.html'));
 });
+app.get(['/michi', '/michi/', '/michi.html', '/michi.html/'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'michi', 'index.html'));
+});
 
 // Rescate de páginas y assets estáticos si se acceden desde una subruta con barra final
-app.get(/^\/.+\/(chat|game|mototaxi|index)(\.html)?\/?$/, (req, res) => {
+app.get(/^\/.+\/(chat|game|mototaxi|michi|index)(\.html)?\/?$/, (req, res) => {
   res.redirect(301, `/${req.params[0]}.html`);
 });
-app.get(/^\/.+\/(css|dist|image|modelos)\/(.+)$/, (req, res) => {
+app.get(/^\/.+\/(css|dist|image|modelos|michi)\/(.+)$/, (req, res) => {
   res.redirect(301, `/${req.params[0]}/${req.params[1]}`);
 });
 

@@ -17,6 +17,8 @@ COPY index.html ./
 COPY game.html ./
 COPY mototaxi.html ./
 COPY chat.html ./
+COPY michi.html ./
+COPY michi/ ./michi/
 COPY routes/ ./routes/
 COPY css/ ./css/
 COPY dist/ ./dist/
